@@ -13,7 +13,8 @@
     <packaging>pom</packaging>
     <modules>
         <module>shared-services-stock</module>
-        <module>shared-services-capital</module>
+        <module>shared-services-customer</module>
+        <module>shared-services-order</module>
         <module>aggregate-services-retail</module>
     </modules>
 
