@@ -1,4 +1,4 @@
-package com.lazy.tcc.example.dubbo.shared.services.order.entity;
+package com.lazy.tcc.example.dubbo.shared.services.order.api.entity;
 
 import lombok.EqualsAndHashCode;
 
@@ -26,11 +26,12 @@ public class TOrderItemEntity implements Serializable {
 
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private String productSku;
     private Integer productNum;
     private String orderNo;
-    private BigDecimal tatolAmount;
+    private BigDecimal totalAmount;
 
     public Long getId() {
         return id;
@@ -64,15 +65,24 @@ public class TOrderItemEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "tatol_amount")
-    public BigDecimal getTatolAmount() {
-        return tatolAmount;
+    @Column(name = "product_sku")
+    public String getProductSku() {
+        return productSku;
     }
 
-    public TOrderItemEntity setTatolAmount(BigDecimal tatolAmount) {
-        this.tatolAmount = tatolAmount;
+    public TOrderItemEntity setProductSku(String productSku) {
+        this.productSku = productSku;
         return this;
     }
 
+    @Basic
+    @Column(name = "total_amount")
+    public BigDecimal getTotalAmount() {
+        return totalAmount;
+    }
 
+    public TOrderItemEntity setTotalAmount(BigDecimal totalAmount) {
+        this.totalAmount = totalAmount;
+        return this;
+    }
 }

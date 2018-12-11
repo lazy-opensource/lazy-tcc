@@ -1,5 +1,7 @@
 package com.lazy.tcc.example.dubbo.shared.services.order.api;
 
+import com.lazy.tcc.example.dubbo.shared.services.order.api.entity.TOrderItemEntity;
+
 /**
  * <p>
  * IOrderItemService
@@ -10,5 +12,6 @@ package com.lazy.tcc.example.dubbo.shared.services.order.api;
  */
 public interface IOrderItemService {
 
+    void save(TOrderItemEntity entity);
 
 }

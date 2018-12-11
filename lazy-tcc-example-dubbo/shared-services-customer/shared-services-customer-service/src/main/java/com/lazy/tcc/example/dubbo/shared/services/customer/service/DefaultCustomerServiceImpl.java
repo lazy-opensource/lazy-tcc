@@ -4,6 +4,9 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.lazy.tcc.example.dubbo.shared.services.customer.ICustomerService;
 import com.lazy.tcc.example.dubbo.shared.services.customer.repository.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -20,11 +23,43 @@ import org.springframework.beans.factory.annotation.Autowired;
         protocol = "${dubbo.protocol.id}",
         registry = "${dubbo.registry.id}"
 )
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class DefaultCustomerServiceImpl implements ICustomerService {
 
     @Autowired
     private ICustomerRepository repository;
 
 
+    /**
+     * TCC - Try Deduct Capital Api
+     *
+     * @param customerNo customerNo {@link String}
+     * @param capital    capital {@link BigDecimal}
+     */
+    @Override
+    public void deductCapital(String customerNo, BigDecimal capital) {
+        repository.deductCapital(customerNo, capital);
+    }
 
+    /**
+     * TCC - Confirm Deduct Capital Api
+     *
+     * @param customerNo customerNo {@link String}
+     * @param capital    capital {@link BigDecimal}
+     */
+    @Override
+    public void confirmDeductCapital(String customerNo, BigDecimal capital) {
+        repository.confirmDeductCapital(customerNo, capital);
+    }
+
+    /**
+     * TCC - Cancel Deduct Capital Api
+     *
+     * @param customerNo customerNo {@link String}
+     * @param capital    capital {@link BigDecimal}
+     */
+    @Override
+    public void cancelDeductCapital(String customerNo, BigDecimal capital) {
+        repository.cancelDeductCapital(customerNo, capital);
+    }
 }

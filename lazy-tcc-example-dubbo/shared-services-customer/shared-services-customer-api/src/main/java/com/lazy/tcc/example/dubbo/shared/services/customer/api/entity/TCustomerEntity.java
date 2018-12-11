@@ -1,9 +1,10 @@
-package com.lazy.tcc.example.dubbo.shared.services.customer.entity;
+package com.lazy.tcc.example.dubbo.shared.services.customer.api.entity;
 
 import lombok.EqualsAndHashCode;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.math.BigDecimal;
 
 /**
  * <p>
@@ -26,10 +27,11 @@ public class TCustomerEntity implements Serializable {
 
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private String customerNo;
-    private Integer tatolCapaital;
-    private Integer frozenCapaital;
+    private BigDecimal totalCapital;
+    private BigDecimal frozenCapital;
     @Version
     private long version;
 
@@ -54,24 +56,24 @@ public class TCustomerEntity implements Serializable {
     }
 
     @Basic
-    @Column(name = "tatol_capaital")
-    public Integer getTatolCapaital() {
-        return tatolCapaital;
+    @Column(name = "total_capital")
+    public BigDecimal getTotalCapital() {
+        return totalCapital;
     }
 
-    public TCustomerEntity setTatolCapaital(Integer tatolCapaital) {
-        this.tatolCapaital = tatolCapaital;
+    public TCustomerEntity setTotalCapital(BigDecimal totalCapital) {
+        this.totalCapital = totalCapital;
         return this;
     }
 
     @Basic
-    @Column(name = "frozen_capaital")
-    public Integer getFrozenCapaital() {
-        return frozenCapaital;
+    @Column(name = "frozen_capital")
+    public BigDecimal getFrozenCapital() {
+        return frozenCapital;
     }
 
-    public TCustomerEntity setFrozenCapaital(Integer frozenCapaital) {
-        this.frozenCapaital = frozenCapaital;
+    public TCustomerEntity setFrozenCapital(BigDecimal frozenCapital) {
+        this.frozenCapital = frozenCapital;
         return this;
     }
 

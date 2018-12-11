@@ -1,8 +1,9 @@
 package com.lazy.tcc.example.dubbo.shared.services.stock.repository;
 
 
-import com.lazy.tcc.example.dubbo.shared.services.stock.entity.TStockEntity;
+import com.lazy.tcc.example.dubbo.shared.services.stock.api.entity.TStockEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -21,10 +22,11 @@ public interface IStockRepository extends JpaRepository<TStockEntity, Long> {
      * @param productSku ProductNo {@link String}
      * @param stockNum   stockNum {@link Integer}
      */
+    @Modifying
     @Query(
             "update from TStockEntity set stockNum = stockNum - ?2, frozenNum = frozenNum + ?2 where productSku = ?1"
     )
-    void tryDeductStock(String productSku, Integer stockNum);
+    void deductStock(String productSku, Integer stockNum);
 
 
     /**
@@ -33,6 +35,7 @@ public interface IStockRepository extends JpaRepository<TStockEntity, Long> {
      * @param productSku ProductNo {@link String}
      * @param stockNum   stockNum {@link Integer}
      */
+    @Modifying
     @Query(
             "update from TStockEntity set frozenNum = frozenNum - ?2 where productSku = ?1"
     )
@@ -45,6 +48,7 @@ public interface IStockRepository extends JpaRepository<TStockEntity, Long> {
      * @param productSku ProductNo {@link String}
      * @param stockNum   stockNum {@link Integer}
      */
+    @Modifying
     @Query(
             "update from TStockEntity set frozenNum = frozenNum - ?2, stockNum = stockNum + ?2 where productSku = ?1"
     )

@@ -1,4 +1,4 @@
-package com.lazy.tcc.example.dubbo.shared.services.stock.entity;
+package com.lazy.tcc.example.dubbo.shared.services.stock.api.entity;
 
 import lombok.EqualsAndHashCode;
 
@@ -25,6 +25,7 @@ public class TStockEntity implements Serializable {
 
 
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private String productSku;
     private Integer stockNum;

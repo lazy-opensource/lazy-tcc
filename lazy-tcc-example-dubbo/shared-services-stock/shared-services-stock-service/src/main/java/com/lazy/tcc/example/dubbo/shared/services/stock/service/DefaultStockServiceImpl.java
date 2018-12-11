@@ -2,10 +2,12 @@ package com.lazy.tcc.example.dubbo.shared.services.stock.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.IStockService;
+import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseBuilder;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseDto;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.StockEditorDto;
 import com.lazy.tcc.example.dubbo.shared.services.stock.repository.IStockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * <p>
@@ -22,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
         protocol = "${dubbo.protocol.id}",
         registry = "${dubbo.registry.id}"
 )
+@Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class DefaultStockServiceImpl implements IStockService {
 
     @Autowired
@@ -34,10 +37,10 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
-    public SimpleResponseDto<String> tryDeductStock(StockEditorDto dto) {
-        repository.tryDeductStock(dto.getProductSku(), dto.getStockNum());
+    public SimpleResponseDto<String> deductStock(StockEditorDto dto) {
+        repository.deductStock(dto.getProductSku(), dto.getStockNum());
 
-        return responseSuccessfully();
+        return SimpleResponseBuilder.success("ok");
     }
 
     /**
@@ -50,7 +53,7 @@ public class DefaultStockServiceImpl implements IStockService {
     public SimpleResponseDto<String> confirmDeductStock(StockEditorDto dto) {
         repository.confirmDeductStock(dto.getProductSku(), dto.getStockNum());
 
-        return responseSuccessfully();
+        return SimpleResponseBuilder.success("ok");
     }
 
     /**
@@ -63,6 +66,6 @@ public class DefaultStockServiceImpl implements IStockService {
     public SimpleResponseDto<String> cancelDeductStock(StockEditorDto dto) {
         repository.cancelDeductStock(dto.getProductSku(), dto.getStockNum());
 
-        return responseSuccessfully();
+        return SimpleResponseBuilder.success("ok");
     }
 }

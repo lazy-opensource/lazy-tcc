@@ -19,7 +19,7 @@ public interface IStockService {
      * @param dto param {@link StockEditorDto}
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
-    SimpleResponseDto<String> tryDeductStock(StockEditorDto dto);
+    SimpleResponseDto<String> deductStock(StockEditorDto dto);
 
 
     /**
@@ -39,17 +39,4 @@ public interface IStockService {
      */
     SimpleResponseDto<String> cancelDeductStock(StockEditorDto dto);
 
-
-    /**
-     * Definition Response Successfully
-     *
-     * @return {@link SimpleResponseDto }
-     */
-    default SimpleResponseDto<String> responseSuccessfully() {
-        SimpleResponseDto<String> responseDto = new SimpleResponseDto<>();
-        responseDto.setData(null);
-        responseDto.setMsg("success");
-        responseDto.setCode("200");
-        return responseDto;
-    }
 }
