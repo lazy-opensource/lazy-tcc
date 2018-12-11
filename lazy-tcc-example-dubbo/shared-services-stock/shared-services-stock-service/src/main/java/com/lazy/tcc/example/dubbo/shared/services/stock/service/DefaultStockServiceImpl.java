@@ -1,5 +1,6 @@
 package com.lazy.tcc.example.dubbo.shared.services.stock.service;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.IStockService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseDto;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.StockEditorDto;
@@ -15,9 +16,12 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @date 2018/12/10.
  */
 @org.springframework.stereotype.Service
-@com.alibaba.dubbo.config.annotation.Service(
-        interfaceClass = IStockService.class, group = "lazy-tcc-example-dubbo",
-        cluster = "failfast", application = "lazy-tcc-example-dubbo-stock")
+@Service(
+        version = "${stock.service.version}",
+        application = "${dubbo.application.id}",
+        protocol = "${dubbo.protocol.id}",
+        registry = "${dubbo.registry.id}"
+)
 public class DefaultStockServiceImpl implements IStockService {
 
     @Autowired

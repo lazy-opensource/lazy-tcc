@@ -1,5 +1,7 @@
 package com.lazy.tcc.example.dubbo.shared.services.stock.entity;
 
+import lombok.EqualsAndHashCode;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -13,6 +15,7 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "t_stock")
+@EqualsAndHashCode
 public class TStockEntity implements Serializable {
 
     /**
