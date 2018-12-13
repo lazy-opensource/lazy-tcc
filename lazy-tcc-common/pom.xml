@@ -12,7 +12,6 @@
     <name>lazy-tcc-common</name>
 
     <dependencies>
-        <!--serialize dependency start-->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -44,6 +43,10 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>de.ruedigermoeller</groupId>
+            <artifactId>fst</artifactId>
         </dependency>
     </dependencies>
 
