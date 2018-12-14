@@ -1,5 +1,7 @@
 package com.lazy.tcc.common.annotation;
 
+import com.lazy.tcc.common.DefaultTransactionContextEditor;
+import com.lazy.tcc.common.TransactionContextEditor;
 import com.lazy.tcc.common.enums.Propagation;
 
 import java.lang.annotation.*;
@@ -25,8 +27,40 @@ public @interface Compensable {
      */
     Propagation propagation() default Propagation.REQUIRED;
 
+    /**
+     * confirm method
+     *
+     * @return {@link String}
+     */
+    String confirmMethod() default "";
 
+    /**
+     * cancel method
+     *
+     * @return {@link String}
+     */
+    String cancelMetho() default "";
 
+    /**
+     * async confirm
+     *
+     * @return {@link Boolean}
+     */
+    boolean asyncConfirm() default false;
+
+    /**
+     * async cancel
+     *
+     * @return {@link Boolean}
+     */
+    boolean asyncCancel() default false;
+
+    /**
+     * confirm method
+     *
+     * @return {@link TransactionContextEditor}
+     */
+    Class<? extends TransactionContextEditor> editor() default DefaultTransactionContextEditor.class;
 
 
 }

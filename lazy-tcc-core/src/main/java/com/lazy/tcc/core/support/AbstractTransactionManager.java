@@ -1,6 +1,6 @@
 package com.lazy.tcc.core.support;
 
-import com.lazy.tcc.core.ITransactionManager;
+import com.lazy.tcc.core.TransactionManager;
 
 /**
  * <p>
@@ -10,7 +10,7 @@ import com.lazy.tcc.core.ITransactionManager;
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public abstract class AbstractTransactionManager implements ITransactionManager {
+public abstract class AbstractTransactionManager implements TransactionManager {
 
 
 }

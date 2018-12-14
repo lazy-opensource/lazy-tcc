@@ -23,7 +23,7 @@
         <java.version>1.8</java.version>
         <springframework.version>5.0.8.RELEASE</springframework.version>
         <kryo.versionn>4.0.1</kryo.versionn>
-        <kryo_serializers.versionn>0.42</kryo_serializers.versionn>
+        <kryo.serializers.versionn>0.42</kryo.serializers.versionn>
         <slf4j.versionn>1.7.25</slf4j.versionn>
         <jcl.versionn>1.2</jcl.versionn>
         <log4j.versionn>1.2.16</log4j.versionn>
@@ -75,7 +75,12 @@
             <dependency>
                 <groupId>de.javakaffee</groupId>
                 <artifactId>kryo-serializers</artifactId>
-                <version>${kryo_serializers.versionn}</version>
+                <version>${kryo.serializers.versionn}</version>
+            </dependency>
+            <dependency>
+                <groupId>de.ruedigermoeller</groupId>
+                <artifactId>fst</artifactId>
+                <version>2.43</version>
             </dependency>
 
             <!--utils dependency start-->
