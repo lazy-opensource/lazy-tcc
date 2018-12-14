@@ -7,14 +7,14 @@ import org.aspectj.lang.annotation.Pointcut;
 
 /**
  * <p>
- * GlobalTransactionInterceptor Definition
+ * DistributedTransactionInterceptor Definition
  * </p>
  *
  * @author laizhiyuan
  * @date 2018/12/14.
  */
 @Aspect
-public class GlobalTransactionInterceptor {
+public class DistributedTransactionInterceptor {
 
 
     @Pointcut("@annotation(com.lazy.tcc.common.annotation.Compensable)")
