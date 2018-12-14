@@ -55,7 +55,7 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
             connection = this.getConnection();
 
             String builder = "insert into " + SpiConfiguration.getInstance().getTxTableName() +
-                    " (tx_id,tx_byte,tx_status,retry_count,create_time,last_update_time,version) VALUES (?,?,?,?,?,?,?)";
+                    " (tx_id,content_byte,tx_status,retry_count,create_time,last_update_time,version) VALUES (?,?,?,?,?,?,?)";
 
             stmt = connection.prepareStatement(builder);
 
