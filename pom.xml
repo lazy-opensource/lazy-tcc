@@ -22,12 +22,12 @@
     <properties>
         <java.version>1.8</java.version>
         <springframework.version>5.0.8.RELEASE</springframework.version>
-        <kryo_version>4.0.1</kryo_version>
-        <kryo_serializers_version>0.42</kryo_serializers_version>
-        <slf4j_version>1.7.25</slf4j_version>
-        <jcl_version>1.2</jcl_version>
-        <log4j_version>1.2.16</log4j_version>
-        <logback_version>1.2.2</logback_version>
+        <kryo.versionn>4.0.1</kryo.versionn>
+        <kryo_serializers.versionn>0.42</kryo_serializers.versionn>
+        <slf4j.versionn>1.7.25</slf4j.versionn>
+        <jcl.versionn>1.2</jcl.versionn>
+        <log4j.versionn>1.2.16</log4j.versionn>
+        <logback.versionn>1.2.2</logback.versionn>
     </properties>
 
 
@@ -38,22 +38,22 @@
             <dependency>
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
-                <version>${slf4j_version}</version>
+                <version>${slf4j.versionn}</version>
             </dependency>
             <dependency>
                 <groupId>commons-logging</groupId>
                 <artifactId>commons-logging</artifactId>
-                <version>${jcl_version}</version>
+                <version>${jcl.versionn}</version>
             </dependency>
             <dependency>
                 <groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
-                <version>${log4j_version}</version>
+                <version>${log4j.versionn}</version>
             </dependency>
             <dependency>
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
-                <version>${logback_version}</version>
+                <version>${logback.versionn}</version>
             </dependency>
 
             <!--serialize dependency start-->
@@ -70,12 +70,12 @@
             <dependency>
                 <groupId>com.esotericsoftware</groupId>
                 <artifactId>kryo</artifactId>
-                <version>${kryo_version}</version>
+                <version>${kryo.versionn}</version>
             </dependency>
             <dependency>
                 <groupId>de.javakaffee</groupId>
                 <artifactId>kryo-serializers</artifactId>
-                <version>${kryo_serializers_version}</version>
+                <version>${kryo_serializers.versionn}</version>
             </dependency>
 
             <!--utils dependency start-->
