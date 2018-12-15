@@ -22,9 +22,6 @@ public class LocalTransactionContextPropagator extends AbstractTransactionContex
     @Override
     public TransactionContext getContext() {
 
-
-
-
         return null;
     }
 }

@@ -41,7 +41,7 @@ public class PropertiesReader {
         InputStream applicationInputStream = null;
         BufferedReader applicationBr = null;
         try {
-            Resource applicationResource = new ClassPathResource("lazy-tcc.properties");
+            Resource applicationResource = new ClassPathResource("application-lazy-tcc.properties");
             applicationInputStream = applicationResource.getInputStream();
             applicationBr = new BufferedReader(new InputStreamReader(applicationInputStream, "UTF-8"));
             mainProp.load(applicationBr);

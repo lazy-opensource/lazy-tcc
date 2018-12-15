@@ -19,7 +19,7 @@ public abstract class AbstractTransactionProcessor implements TransactionProcess
     /**
      * transactionManager
      */
-    protected final TransactionManager transactionManager = new TransactionManager();
+    protected final TransactionManager transactionManager = TransactionManager.getSingle();
 
     /**
      * logger

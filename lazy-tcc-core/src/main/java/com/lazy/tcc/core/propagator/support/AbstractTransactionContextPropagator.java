@@ -12,6 +12,7 @@ import com.lazy.tcc.core.propagator.TransactionContextPropagator;
  */
 public abstract class AbstractTransactionContextPropagator implements TransactionContextPropagator {
 
+    protected static final String TX_PROPAGATOR_KEY = "LAZY_TCC_TX_ID";
 
 
 

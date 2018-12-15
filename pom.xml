@@ -28,11 +28,32 @@
         <jcl.versionn>1.2</jcl.versionn>
         <log4j.versionn>1.2.16</log4j.versionn>
         <logback.versionn>1.2.2</logback.versionn>
+        <dubbo.version>2.6.2</dubbo.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+            <!--dubbo-->
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.springframework</groupId>
+                        <artifactId>spring</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>javax.servlet</groupId>
+                        <artifactId>servlet-api</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>log4j</groupId>
+                        <artifactId>log4j</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
             <!--log dependency start-->
             <dependency>
                 <groupId>org.slf4j</groupId>

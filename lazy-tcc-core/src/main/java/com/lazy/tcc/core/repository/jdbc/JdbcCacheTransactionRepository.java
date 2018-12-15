@@ -5,9 +5,9 @@ import com.lazy.tcc.core.SpiConfiguration;
 import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.exception.ConnectionIOException;
 import com.lazy.tcc.core.exception.CrudIOException;
+import com.lazy.tcc.core.repository.support.AbstractCacheTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
 import com.lazy.tcc.core.serializer.SerializationFactory;
-import com.lazy.tcc.core.repository.support.AbstractCacheTransactionRepository;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
@@ -55,7 +55,7 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
             connection = this.getConnection();
 
             String builder = "insert into " + SpiConfiguration.getInstance().getTxTableName() +
-                    " (tx_id,content_byte,tx_status,retry_count,create_time,last_update_time,version) VALUES (?,?,?,?,?,?,?)";
+                    " (tx_id,content_byte,retry_count,create_time,last_update_time,version) VALUES (?,?,?,?,?,?,?)";
 
             stmt = connection.prepareStatement(builder);
 
@@ -65,10 +65,9 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
             serialization.serialize(bos).writeObject(transaction);
             stmt.setBytes(2, bos.toByteArray());
 
-            stmt.setInt(3, transaction.getTxStatus().getVal());
-            stmt.setInt(4, transaction.getRetryCount());
+            stmt.setInt(3, transaction.getRetryCount());
+            stmt.setTimestamp(4, DateUtils.getCurrentTimestamp(DateUtils.YYYY_MM_DD_HH_MM_SS));
             stmt.setTimestamp(5, DateUtils.getCurrentTimestamp(DateUtils.YYYY_MM_DD_HH_MM_SS));
-            stmt.setTimestamp(6, DateUtils.getCurrentTimestamp(DateUtils.YYYY_MM_DD_HH_MM_SS));
             stmt.setLong(7, transaction.getVersion());
 
             return stmt.executeUpdate();

@@ -1,7 +1,8 @@
 package com.lazy.tcc.core;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
-import com.lazy.tcc.common.enums.TransactionType;
+import com.lazy.tcc.common.utils.DateUtils;
+import com.lazy.tcc.common.utils.SnowflakeIdWorkerUtils;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -22,6 +23,13 @@ public class Transaction implements Serializable {
      */
     private static final long serialVersionUID = -994345465462L;
 
+    public Transaction() {
+        this.txId = SnowflakeIdWorkerUtils.getINSTANCE().nextId();
+        this.txPhase = TransactionPhase.TRY;
+        this.retryCount = 0;
+        this.createTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
+        this.lastUpdateTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
+    }
 
     /**
      * transaction id
@@ -32,11 +40,6 @@ public class Transaction implements Serializable {
      * {@link TransactionPhase}
      */
     private TransactionPhase txPhase;
-    /**
-     * transaction type
-     * {@link TransactionType}
-     */
-    private TransactionType txType;
     /**
      * retry count
      */
@@ -56,7 +59,7 @@ public class Transaction implements Serializable {
     /**
      * participant list
      */
-    private List<Participant> participants = new ArrayList<Participant>();
+    private List<Participant> participants = new ArrayList<>();
 
     public Long getTxId() {
         return txId;
@@ -73,15 +76,6 @@ public class Transaction implements Serializable {
 
     public Transaction setTxPhase(TransactionPhase txPhase) {
         this.txPhase = txPhase;
-        return this;
-    }
-
-    public TransactionType getTxType() {
-        return txType;
-    }
-
-    public Transaction setTxType(TransactionType txType) {
-        this.txType = txType;
         return this;
     }
 

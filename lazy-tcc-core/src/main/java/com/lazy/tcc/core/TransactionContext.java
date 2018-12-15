@@ -1,7 +1,6 @@
 package com.lazy.tcc.core;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
-import com.lazy.tcc.common.enums.TransactionType;
 
 /**
  * <p>
