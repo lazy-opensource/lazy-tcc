@@ -18,7 +18,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 /**
  * @author laizhiyuan
- * @date 2018/1/4.
+ * @since 2018/1/4.
  * <p>测试基础类</p>
  */
 @RunWith(SpringRunner.class)

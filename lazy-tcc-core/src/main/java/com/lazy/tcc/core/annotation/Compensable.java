@@ -1,6 +1,6 @@
-package com.lazy.tcc.common.annotation;
+package com.lazy.tcc.core.annotation;
 
-import com.lazy.tcc.common.propagator.TransactionContextPropagator;
+import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 import com.lazy.tcc.common.enums.Propagation;
 
 import java.lang.annotation.*;

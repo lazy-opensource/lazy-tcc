@@ -1,5 +1,8 @@
 package com.lazy.tcc.core;
 
+import com.lazy.tcc.common.enums.TransactionPhase;
+import com.lazy.tcc.common.enums.TransactionType;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,9 +28,15 @@ public class Transaction implements Serializable {
      */
     private Long txId;
     /**
-     * transaction status
+     * transaction phase
+     * {@link TransactionPhase}
      */
-    private TransactionStatus txStatus;
+    private TransactionPhase txPhase;
+    /**
+     * transaction type
+     * {@link TransactionType}
+     */
+    private TransactionType txType;
     /**
      * retry count
      */
@@ -58,12 +67,21 @@ public class Transaction implements Serializable {
         return this;
     }
 
-    public TransactionStatus getTxStatus() {
-        return txStatus;
+    public TransactionPhase getTxPhase() {
+        return txPhase;
     }
 
-    public Transaction setTxStatus(TransactionStatus txStatus) {
-        this.txStatus = txStatus;
+    public Transaction setTxPhase(TransactionPhase txPhase) {
+        this.txPhase = txPhase;
+        return this;
+    }
+
+    public TransactionType getTxType() {
+        return txType;
+    }
+
+    public Transaction setTxType(TransactionType txType) {
+        this.txType = txType;
         return this;
     }
 

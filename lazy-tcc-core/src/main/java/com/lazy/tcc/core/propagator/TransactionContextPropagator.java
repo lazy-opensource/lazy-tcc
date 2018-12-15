@@ -1,6 +1,7 @@
-package com.lazy.tcc.common.propagator;
+package com.lazy.tcc.core.propagator;
 
-import com.lazy.tcc.common.TransactionContext;
+
+import com.lazy.tcc.core.TransactionContext;
 
 /**
  * <p>
@@ -10,7 +11,7 @@ import com.lazy.tcc.common.TransactionContext;
  * @author laizhiyuan
  * @since 2018/12/14.
  */
-public abstract class TransactionContextPropagator {
+public interface TransactionContextPropagator {
 
 
     /**
@@ -18,14 +19,14 @@ public abstract class TransactionContextPropagator {
      *
      * @param context transaction context
      */
-    public abstract void setContext(TransactionContext context);
+    void setContext(TransactionContext context);
 
     /**
      * get transaction propagator
      *
      * @return {@link TransactionContext}
      */
-    public abstract TransactionContext getContext();
+    TransactionContext getContext();
 
 
 }

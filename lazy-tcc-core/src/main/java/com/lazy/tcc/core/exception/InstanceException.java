@@ -6,7 +6,7 @@ package com.lazy.tcc.core.exception;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/14.
+ * @since 2018/12/14.
  */
 public class InstanceException extends RuntimeException {
 

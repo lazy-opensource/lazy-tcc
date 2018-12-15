@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/10.
+ * @since 2018/12/10.
  */
 public interface IStockRepository extends JpaRepository<TStockEntity, Long> {
 

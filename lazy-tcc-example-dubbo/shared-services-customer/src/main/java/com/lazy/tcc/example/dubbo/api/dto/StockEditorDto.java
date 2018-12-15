@@ -6,7 +6,7 @@ package com.lazy.tcc.example.dubbo.api.dto;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/10.
+ * @since 2018/12/10.
  */
 public class StockEditorDto extends AbstractBasicDto {
 

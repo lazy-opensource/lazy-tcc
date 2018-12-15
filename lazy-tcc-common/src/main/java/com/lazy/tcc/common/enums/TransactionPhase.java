@@ -1,14 +1,14 @@
-package com.lazy.tcc.core;
+package com.lazy.tcc.common.enums;
 
 /**
  * <p>
- * TransactionStatus Definition
+ * TransactionPhase Definition
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/14.
+ * @since 2018/12/14.
  */
-public enum TransactionStatus {
+public enum TransactionPhase {
 
 
     TRY(1),
@@ -17,7 +17,7 @@ public enum TransactionStatus {
 
     private int val;
 
-    TransactionStatus(int val) {
+    TransactionPhase(int val) {
         this.val = val;
     }
 
@@ -25,12 +25,12 @@ public enum TransactionStatus {
         return val;
     }
 
-    public TransactionStatus setVal(int val) {
+    public TransactionPhase setVal(int val) {
         this.val = val;
         return this;
     }
 
-    public static TransactionStatus valueOf(int val) {
+    public static TransactionPhase valueOf(int val) {
 
         switch (val) {
             case 1:

@@ -6,7 +6,7 @@ import java.io.File;
  * Logger provider
  *
  * @author laizhiyuan
- * @date 2018/6/28.
+ * @since 2018/6/28.
  *
  */
 public interface LoggerAdapter {

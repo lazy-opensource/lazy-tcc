@@ -1,6 +1,10 @@
 package com.lazy.tcc.core;
 
-import java.util.Queue;
+import com.lazy.tcc.core.exception.TransactionManagerException;
+import com.lazy.tcc.core.propagator.TransactionContextPropagator;
+
+import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * <p>
@@ -12,32 +16,101 @@ import java.util.Queue;
  */
 public class TransactionManager {
 
-    private ThreadLocal<Queue<Transaction>> currentThreadTransaction = new ThreadLocal<>();
+    private ThreadLocal<LinkedList<Transaction>> currentThreadTransactionHolder = new ThreadLocal<>();
+    private final ConcurrentHashMap<Class<? extends TransactionContextPropagator>, TransactionContextPropagator> propagatorHolder = new ConcurrentHashMap<>();
 
-    public void begin(TransactionContext context) {
+    public Transaction begin(WeavingPointInfo pointInfo) {
 
+        return null;
     }
 
-    public void commit(TransactionContext context) {
-        Transaction currentTransaction = currentThreadTransaction.get().peek();
+    public void commit(WeavingPointInfo pointInfo) {
+        Transaction currentTransaction = currentThreadTransactionHolder.get().peek();
         for (Participant participant : currentTransaction.getParticipants()) {
-            participant.confirm(context);
+            participant.confirm(getDistributedTransactionContext(pointInfo));
         }
     }
 
-    public void rollback(TransactionContext context) {
-        Transaction currentTransaction = currentThreadTransaction.get().peek();
+    public void rollback(WeavingPointInfo pointInfo) {
+        Transaction currentTransaction = currentThreadTransactionHolder.get().peek();
         for (Participant participant : currentTransaction.getParticipants()) {
-            participant.cancel(context);
+            participant.cancel(getDistributedTransactionContext(pointInfo));
         }
     }
 
-    public boolean isActive(){
-        return currentThreadTransaction.get() != null && !currentThreadTransaction.get().isEmpty();
+    public void participant(WeavingPointInfo pointInfo) {
+
     }
 
-    public void cleanup() {
-        currentThreadTransaction.remove();
+    public boolean hasDistributedActiveTransaction(WeavingPointInfo pointInfo) {
+        return this.getTransactionPropagator(pointInfo).getContext() != null;
+    }
+
+    public boolean hasLocalActiveTransaction() {
+        return currentThreadTransactionHolder.get() != null && !currentThreadTransactionHolder.get().isEmpty();
+    }
+
+    public Transaction getCurrentTransaction() {
+        if (hasLocalActiveTransaction()) {
+            return currentThreadTransactionHolder.get().peek();
+        }
+        return null;
+    }
+
+    public void cleanCurrentLocalTransaction(Transaction transaction) {
+        if (hasLocalActiveTransaction()) {
+            Transaction curTransaction = this.getCurrentTransaction();
+            if (curTransaction == transaction) {
+                currentThreadTransactionHolder.get().pop();
+            }
+        }
+    }
+
+    public TransactionContext getLocalTransactionContext(WeavingPointInfo pointInfo) {
+
+        Transaction transaction = this.getCurrentTransaction();
+
+        if (transaction == null) {
+            return null;
+        }
+
+        return new TransactionContext()
+                .setTxId(transaction.getTxId())
+                .setTxPhase(transaction.getTxPhase())
+                .setTxType(transaction.getTxType());
+
+    }
+
+
+    public TransactionContext getDistributedTransactionContext(WeavingPointInfo pointInfo) {
+
+        TransactionContext context = this.getLocalTransactionContext(pointInfo);
+
+        if (context == null) {
+
+            return this.getTransactionPropagator(pointInfo).getContext();
+        }
+
+        return context;
+
+    }
+
+    public TransactionContextPropagator getTransactionPropagator(WeavingPointInfo pointInfo) {
+
+        Class<? extends TransactionContextPropagator> cls = pointInfo.getCompensable().propagator();
+
+        if (propagatorHolder.isEmpty() || propagatorHolder.get(cls) == null) {
+
+            try {
+
+                TransactionContextPropagator propagator = cls.newInstance();
+                propagatorHolder.put(cls, propagator);
+            } catch (Exception e) {
+                throw new TransactionManagerException("Instantiating transaction propagator exceptions", e);
+            }
+        }
+
+        return propagatorHolder.get(cls);
     }
 
 

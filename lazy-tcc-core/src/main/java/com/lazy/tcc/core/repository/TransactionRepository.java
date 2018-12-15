@@ -10,7 +10,7 @@ import com.lazy.tcc.core.Transaction;
  * @author laizhiyuan
  * @since 2018/12/12.
  */
-public interface ITransactionRepository {
+public interface TransactionRepository {
 
     int insert(Transaction transaction);
 

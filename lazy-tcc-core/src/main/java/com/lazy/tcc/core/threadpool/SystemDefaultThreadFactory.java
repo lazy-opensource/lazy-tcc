@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author laizhiyuan
- * @date 2018/1/16.
+ * @since 2018/1/16.
  * <p>系统默认线程工厂类</p>
  */
 public class SystemDefaultThreadFactory implements ThreadFactory {

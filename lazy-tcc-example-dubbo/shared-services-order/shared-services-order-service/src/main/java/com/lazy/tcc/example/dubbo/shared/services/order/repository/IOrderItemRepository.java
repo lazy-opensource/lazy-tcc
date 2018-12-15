@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/10.
+ * @since 2018/12/10.
  */
 public interface IOrderItemRepository extends JpaRepository<TOrderItemEntity, Long> {
 

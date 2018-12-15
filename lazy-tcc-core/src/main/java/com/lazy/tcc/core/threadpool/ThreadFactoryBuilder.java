@@ -4,7 +4,7 @@ import java.util.concurrent.ThreadFactory;
 
 /**
  * @author laizhiyuan
- * @date 2018/1/16.
+ * @since 2018/1/16.
  * <p>线程工厂构建者</p>
  */
 public class ThreadFactoryBuilder {

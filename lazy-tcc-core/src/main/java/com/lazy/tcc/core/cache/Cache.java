@@ -6,9 +6,9 @@ package com.lazy.tcc.core.cache;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/14.
+ * @since 2018/12/14.
  */
-public interface ICache<K, V> {
+public interface Cache<K, V> {
 
     /**
      * put

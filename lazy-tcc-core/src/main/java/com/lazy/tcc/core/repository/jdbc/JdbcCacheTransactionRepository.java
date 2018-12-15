@@ -7,7 +7,7 @@ import com.lazy.tcc.core.exception.ConnectionIOException;
 import com.lazy.tcc.core.exception.CrudIOException;
 import com.lazy.tcc.core.serializer.Serialization;
 import com.lazy.tcc.core.serializer.SerializationFactory;
-import com.lazy.tcc.core.support.AbstractCacheTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractCacheTransactionRepository;
 
 import javax.sql.DataSource;
 import java.io.ByteArrayOutputStream;
@@ -27,7 +27,7 @@ import java.sql.Statement;
 public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepository {
 
     private DataSource dataSource;
-    private Serialization serialization = SerializationFactory.newInstance();
+    private Serialization serialization = SerializationFactory.create();
 
     public DataSource getDataSource() {
         return dataSource;

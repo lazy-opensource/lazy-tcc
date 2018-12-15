@@ -1,5 +1,8 @@
 package com.lazy.tcc.core;
 
+import com.lazy.tcc.common.enums.TransactionPhase;
+import com.lazy.tcc.common.enums.TransactionType;
+
 /**
  * <p>
  * TransactionContext Definition
@@ -11,8 +14,17 @@ package com.lazy.tcc.core;
 public class TransactionContext {
 
     private Long txId;
-    private TransactionStatus txStatus;
+    private TransactionPhase txPhase;
+    private TransactionType txType;
 
+    public TransactionType getTxType() {
+        return txType;
+    }
+
+    public TransactionContext setTxType(TransactionType txType) {
+        this.txType = txType;
+        return this;
+    }
 
     public Long getTxId() {
         return txId;
@@ -23,12 +35,12 @@ public class TransactionContext {
         return this;
     }
 
-    public TransactionStatus getTxStatus() {
-        return txStatus;
+    public TransactionPhase getTxPhase() {
+        return txPhase;
     }
 
-    public TransactionContext setTxStatus(TransactionStatus txStatus) {
-        this.txStatus = txStatus;
+    public TransactionContext setTxPhase(TransactionPhase txPhase) {
+        this.txPhase = txPhase;
         return this;
     }
 }

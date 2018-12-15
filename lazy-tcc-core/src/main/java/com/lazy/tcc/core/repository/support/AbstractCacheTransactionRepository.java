@@ -1,9 +1,9 @@
-package com.lazy.tcc.core.support;
+package com.lazy.tcc.core.repository.support;
 
-import com.lazy.tcc.core.repository.ITransactionRepository;
+import com.lazy.tcc.core.repository.TransactionRepository;
 import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.cache.CacheFactory;
-import com.lazy.tcc.core.cache.ICache;
+import com.lazy.tcc.core.cache.Cache;
 
 /**
  * <p>
@@ -13,9 +13,9 @@ import com.lazy.tcc.core.cache.ICache;
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public abstract class AbstractCacheTransactionRepository implements ITransactionRepository {
+public abstract class AbstractCacheTransactionRepository implements TransactionRepository {
 
-    ICache<Long, Transaction> cache = CacheFactory.newInstance();
+    private Cache<Long, Transaction> cache = CacheFactory.create();
 
     @Override
     public int insert(Transaction transaction) {

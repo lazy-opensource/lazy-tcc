@@ -8,13 +8,13 @@ import com.lazy.tcc.core.SpiConfiguration;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/14.
+ * @since 2018/12/14.
  */
 public class SerializationFactory {
 
     private static Serialization serialization;
 
-    public static Serialization newInstance() {
+    public static Serialization create() {
         if (serialization == null) {
             synchronized (SerializationFactory.class) {
                 if (serialization == null) {

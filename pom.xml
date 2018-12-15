@@ -33,7 +33,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <!--log dependency start-->
             <dependency>
                 <groupId>org.slf4j</groupId>

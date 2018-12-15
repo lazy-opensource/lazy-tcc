@@ -1,7 +1,7 @@
-package com.lazy.tcc.core.cache;
+package com.lazy.tcc.core.cache.guava;
 
-import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import com.lazy.tcc.core.cache.support.AbstractCache;
 
 import java.util.concurrent.TimeUnit;
 
@@ -11,11 +11,11 @@ import java.util.concurrent.TimeUnit;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/14.
+ * @since 2018/12/14.
  */
-public class GoogleGuavaCache<K, V> implements ICache<K, V> {
+public class GoogleGuavaCache<K, V> extends AbstractCache<K, V> {
 
-    private final Cache<K, V> cache;
+    private final com.google.common.cache.Cache<K, V> cache;
 
     public GoogleGuavaCache() {
         //120 sec

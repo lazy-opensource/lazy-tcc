@@ -9,13 +9,13 @@ import com.lazy.tcc.core.SpiConfiguration;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/12/14.
+ * @since 2018/12/14.
  */
 public class CacheFactory {
 
-    private static ICache cache;
+    private static Cache cache;
 
-    public static <K, V> ICache<K, V> newInstance() {
+    public static <K, V> Cache<K, V> create() {
         if (cache == null) {
             synchronized (CacheFactory.class) {
                 if (cache == null) {

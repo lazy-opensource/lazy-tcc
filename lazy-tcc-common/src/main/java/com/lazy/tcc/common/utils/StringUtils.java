@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 /**
  * @author laizhiyuan
- * @date 2017/12/29.
+ * @since 2017/12/29.
  * <p>字符串工具类</p>
  */
 @SuppressWarnings("unchecked")

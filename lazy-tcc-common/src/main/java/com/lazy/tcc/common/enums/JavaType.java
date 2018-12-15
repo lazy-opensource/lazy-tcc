@@ -6,7 +6,7 @@ package com.lazy.tcc.common.enums;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/6/19.
+ * @since 2018/6/19.
  */
 public enum JavaType {
 

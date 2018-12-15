@@ -1,9 +1,9 @@
 package com.lazy.tcc.core;
 
-import com.lazy.tcc.core.cache.ICache;
+import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
-import com.lazy.tcc.core.repository.ITransactionRepository;
+import com.lazy.tcc.core.repository.TransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
 import com.lazy.tcc.common.utils.ReflectUtils;
 import com.lazy.tcc.common.utils.StringUtils;
@@ -17,14 +17,14 @@ import java.lang.reflect.Field;
  * </p>
  *
  * @author laizhiyuan
- * @date 2018/10/16.
+ * @since 2018/10/16.
  */
 @ConfigurationProperties("lazy.tcc.config")
 public class SpiConfiguration {
 
     private Class<? extends Serialization> seriClassImpl;
-    private Class<? extends ICache> cacheClassImpl;
-    private Class<? extends ITransactionRepository> txRepository;
+    private Class<? extends Cache> cacheClassImpl;
+    private Class<? extends TransactionRepository> txRepository;
     private String loggerAdapter;
     private String txTableName;
 
@@ -37,11 +37,11 @@ public class SpiConfiguration {
         return this;
     }
 
-    public Class<? extends ITransactionRepository> getTxRepository() {
+    public Class<? extends TransactionRepository> getTxRepository() {
         return txRepository;
     }
 
-    public SpiConfiguration setTxRepository(Class<? extends ITransactionRepository> txRepository) {
+    public SpiConfiguration setTxRepository(Class<? extends TransactionRepository> txRepository) {
         this.txRepository = txRepository;
         return this;
     }
@@ -55,11 +55,11 @@ public class SpiConfiguration {
         return this;
     }
 
-    public Class<? extends ICache> getCacheClassImpl() {
+    public Class<? extends Cache> getCacheClassImpl() {
         return cacheClassImpl;
     }
 
-    public SpiConfiguration setCacheClassImpl(Class<? extends ICache> cacheClassImpl) {
+    public SpiConfiguration setCacheClassImpl(Class<? extends Cache> cacheClassImpl) {
         this.cacheClassImpl = cacheClassImpl;
         return this;
     }

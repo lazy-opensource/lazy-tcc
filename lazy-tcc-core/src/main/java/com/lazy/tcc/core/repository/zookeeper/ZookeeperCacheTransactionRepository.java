@@ -1,7 +1,7 @@
 package com.lazy.tcc.core.repository.zookeeper;
 
 import com.lazy.tcc.core.Transaction;
-import com.lazy.tcc.core.support.AbstractCacheTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractCacheTransactionRepository;
 
 /**
  * <p>

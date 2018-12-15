@@ -20,8 +20,8 @@ package com.lazy.tcc.common.utils;
  * 经测试，SnowFlake每秒能够产生26万ID左右。
  *
  * @author laizhiyuan
- * @date 2017/12/31.
- * @date <p>
+ * @since 2017/12/31.
+ * @since <p>
  * 参考Twitter、当当网、淘宝解决分布式主键Id生成的实现方式
  * </p>
  */

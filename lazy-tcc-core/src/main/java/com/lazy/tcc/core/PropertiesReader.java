@@ -15,7 +15,7 @@ import java.util.Properties;
  * <p>通过Properties获取配置文件内容</p>
  *
  * @author laizhiyuan
- * @date 2018/3/26.
+ * @since 2018/3/26.
  */
 public class PropertiesReader {
 

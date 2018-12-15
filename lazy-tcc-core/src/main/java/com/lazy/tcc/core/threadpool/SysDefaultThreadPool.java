@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * @author laizhiyuan
- * @date 2018/1/16.
+ * @since 2018/1/16.
  * <p>手动创建线程池</p>
  */
 public abstract class SysDefaultThreadPool {
