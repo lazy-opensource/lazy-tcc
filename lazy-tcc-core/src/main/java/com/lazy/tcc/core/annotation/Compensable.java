@@ -1,13 +1,14 @@
 package com.lazy.tcc.core.annotation;
 
-import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 import com.lazy.tcc.common.enums.Propagation;
+import com.lazy.tcc.core.propagator.LocalTransactionContextPropagator;
+import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 
 import java.lang.annotation.*;
 
 /**
  * <p>
- * Definition A Compensable
+ * Definition A Compensable Annotation
  * </p>
  *
  * @author laizhiyuan
@@ -38,7 +39,7 @@ public @interface Compensable {
      *
      * @return {@link String}
      */
-    String cancelMetho() default "";
+    String cancelMethod() default "";
 
     /**
      * async confirm
@@ -59,7 +60,7 @@ public @interface Compensable {
      *
      * @return {@link TransactionContextPropagator}
      */
-    Class<? extends TransactionContextPropagator> propagator() default TransactionContextPropagator.class;
+    Class<? extends TransactionContextPropagator> propagator() default LocalTransactionContextPropagator.class;
 
 
 }

@@ -28,7 +28,7 @@ public abstract class AbstractTransactionProcessor implements TransactionProcess
 
 
     /**
-     * is accept
+     * abstract method, Implemented by subclasses
      *
      * @param pointInfo {@link WeavingPointInfo}
      * @return {@link Boolean}
@@ -36,21 +36,32 @@ public abstract class AbstractTransactionProcessor implements TransactionProcess
     protected abstract boolean isAccept(WeavingPointInfo pointInfo);
 
     /**
-     * doProcessor
+     * abstract method, Implemented by subclasses
      *
      * @param pointInfo {@link WeavingPointInfo}
      * @throws Throwable {@link Throwable}
      */
     protected abstract Object doProcessor(WeavingPointInfo pointInfo) throws Throwable;
 
+    /**
+     * Decide to continue execution if accessible
+     *
+     * @param pointInfo {@link WeavingPointInfo}
+     * @return {@link Object}
+     * @throws Throwable
+     */
     @Override
     public Object processor(WeavingPointInfo pointInfo) throws Throwable {
 
+        //if can accept
         if (isAccept(pointInfo)) {
 
+            //continue execute
             return this.doProcessor(pointInfo);
         }
 
+        //else execute interceptor method
         return pointInfo.getJoinPoint().proceed();
     }
+
 }

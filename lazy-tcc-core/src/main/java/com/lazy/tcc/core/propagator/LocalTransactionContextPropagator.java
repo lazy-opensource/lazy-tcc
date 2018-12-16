@@ -11,17 +11,19 @@ import com.lazy.tcc.core.propagator.support.AbstractTransactionContextPropagator
  * @author laizhiyuan
  * @since 2018/12/15.
  */
-public class LocalTransactionContextPropagator extends AbstractTransactionContextPropagator{
+public class LocalTransactionContextPropagator extends AbstractTransactionContextPropagator {
 
 
     @Override
     public void setContext(TransactionContext context) {
 
+        //no operation
     }
 
     @Override
     public TransactionContext getContext() {
 
+        //no operation
         return null;
     }
 }

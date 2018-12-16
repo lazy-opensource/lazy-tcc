@@ -17,6 +17,9 @@ public class GoogleGuavaCache<K, V> extends AbstractCache<K, V> {
 
     private final com.google.common.cache.Cache<K, V> cache;
 
+    /**
+     * Simple Construct
+     */
     public GoogleGuavaCache() {
         //120 sec
         int defaultExpire = 120;

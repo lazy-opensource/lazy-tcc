@@ -2,7 +2,7 @@ package com.lazy.tcc.core.logger;
 
 
 import com.lazy.tcc.common.utils.StringUtils;
-import com.lazy.tcc.core.SpiConfiguration;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 import com.lazy.tcc.core.logger.jcl.JclLoggerAdapter;
 import com.lazy.tcc.core.logger.jdk.JdkLoggerAdapter;
 import com.lazy.tcc.core.logger.log4j.Log4jLoggerAdapter;

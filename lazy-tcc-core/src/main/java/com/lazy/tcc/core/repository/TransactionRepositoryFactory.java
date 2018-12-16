@@ -1,6 +1,6 @@
 package com.lazy.tcc.core.repository;
 
-import com.lazy.tcc.core.SpiConfiguration;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 
 /**
  * <p>
@@ -10,10 +10,12 @@ import com.lazy.tcc.core.SpiConfiguration;
  * @author laizhiyuan
  * @since 2018/12/15.
  */
-public class TransactionRepositoryFactory {
+public final class TransactionRepositoryFactory {
 
 
-    private static TransactionRepository repository;
+    private TransactionRepositoryFactory(){}
+
+    private static volatile TransactionRepository repository;
 
     public static TransactionRepository create() {
         if (repository == null) {

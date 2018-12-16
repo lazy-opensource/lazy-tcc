@@ -6,6 +6,7 @@ import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.TransactionContext;
 import com.lazy.tcc.core.WeavingPointInfo;
 import com.lazy.tcc.core.processor.support.AbstractTransactionProcessor;
+import com.lazy.tcc.core.propagator.TransactionContextPropagatorSingleFactory;
 
 /**
  * <p>
@@ -17,8 +18,16 @@ import com.lazy.tcc.core.processor.support.AbstractTransactionProcessor;
  */
 public final class DistributedTransactionProcessor extends AbstractTransactionProcessor {
 
-    private static DistributedTransactionProcessor single;
+    /**
+     * distribute transaction core processor
+     */
+    private static volatile DistributedTransactionProcessor single;
 
+    /**
+     * single
+     *
+     * @return self single instance
+     */
     public static DistributedTransactionProcessor getSingle() {
         if (single == null) {
             synchronized (DistributedTransactionProcessor.class) {
@@ -30,33 +39,70 @@ public final class DistributedTransactionProcessor extends AbstractTransactionPr
         return single;
     }
 
+    /**
+     * private construct
+     */
     private DistributedTransactionProcessor() {
 
     }
 
     private DistributedParticipantProcessor participantProcessor = DistributedParticipantProcessor.getSingle();
 
+    /**
+     * impl is accept logic
+     *
+     * @param pointInfo {@link WeavingPointInfo}
+     * @return {@link Boolean}
+     */
     @Override
     protected boolean isAccept(WeavingPointInfo pointInfo) {
 
+        if (pointInfo.getCompensable().propagation().equals(Propagation.NOT_SUPPORTED)) {
+
+            //not support transaction run model
+            return false;
+        }
+
         TransactionContext context = this.transactionManager.getDistributedTransactionContext(pointInfo);
 
-        return context == null || TransactionPhase.TRY.equals(context.getTxPhase());
+        if (context == null) {
+
+            return true;
+        }
+
+        if (TransactionPhase.TRY.equals(context.getTxPhase())) {
+
+            return true;
+        }
+
+        return false;
     }
 
+    /**
+     * processor
+     *
+     * @param pointInfo {@link WeavingPointInfo}
+     * @return {@link Object}
+     * @throws Throwable
+     */
     @Override
     public Object processor(WeavingPointInfo pointInfo) throws Throwable {
+
         if (!isAccept(pointInfo)) {
 
             //not accept
             return pointInfo.getJoinPoint().proceed();
         }
 
-        boolean isNewTransaction = this.isNewTransaction(pointInfo);
+        //propagator transaction
+        TransactionContext context = this.transactionManager.getDistributedTransactionContext(pointInfo);
+        //todo: Consumers and providers will repeat calls before execution, and consider optimization in the future
+        TransactionContextPropagatorSingleFactory.create(pointInfo.getCompensable().propagator()).setContext(context);
 
-        //new transaction
+        boolean isNewTransaction = this.isNewTransaction(pointInfo);
         if (isNewTransaction) {
 
+            //new transaction
             return this.doProcessor(pointInfo);
         }
 
@@ -64,6 +110,13 @@ public final class DistributedTransactionProcessor extends AbstractTransactionPr
         return participantProcessor.processor(pointInfo);
     }
 
+    /**
+     * new transaction logic
+     *
+     * @param pointInfo {@link WeavingPointInfo}
+     * @return {@link Object}
+     * @throws Throwable
+     */
     @Override
     protected Object doProcessor(WeavingPointInfo pointInfo) throws Throwable {
 
@@ -72,13 +125,16 @@ public final class DistributedTransactionProcessor extends AbstractTransactionPr
 
         try {
 
-            //begin tranction
+            //begin transaction
             transaction = this.transactionManager.begin();
 
             try {
 
                 //execute program
                 invokeVal = pointInfo.getJoinPoint().proceed();
+
+                //Attempt to add yourself to the current transaction participant
+                this.participantProcessor.participant(pointInfo);
             } catch (Throwable tryException) {
 
                 logger.error("program exception, rollback transaction");
@@ -89,12 +145,12 @@ public final class DistributedTransactionProcessor extends AbstractTransactionPr
 
             //program execute success, commit transaction
             this.transactionManager.commit(pointInfo.getCompensable().asyncConfirm());
-        } catch (Throwable ex) {
+        } catch (Throwable transactionException) {
 
-            logger.error("transaction exception, clean current transaction, Give job compensation transaction rollback", ex);
+            logger.error("transaction exception, clean current transaction, Give job compensation transaction rollback", transactionException);
             this.transactionManager.cleanCurrentTransaction(transaction);
 
-            throw ex;
+            throw transactionException;
         }
 
         return invokeVal;
@@ -113,11 +169,13 @@ public final class DistributedTransactionProcessor extends AbstractTransactionPr
             return true;
         }
 
-        if (TransactionPhase.TRY.equals(context.getTxPhase()) &&
-                Propagation.REQUIRES_NEW.equals(pointInfo.getCompensable().propagation())) {
-            return true;
-        }
+        return TransactionPhase.TRY.equals(context.getTxPhase()) &&
+                Propagation.REQUIRES_NEW.equals(pointInfo.getCompensable().propagation());
 
-        return false;
+    }
+
+    private boolean isNotSupportedTransaction(WeavingPointInfo pointInfo) {
+
+        return pointInfo.getCompensable().propagation().equals(Propagation.NOT_SUPPORTED);
     }
 }

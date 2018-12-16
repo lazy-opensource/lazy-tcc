@@ -1,19 +1,19 @@
-package com.lazy.tcc.core;
+package com.lazy.tcc.core.spi;
 
+import com.lazy.tcc.common.utils.ReflectUtils;
+import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.TransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
-import com.lazy.tcc.common.utils.ReflectUtils;
-import com.lazy.tcc.common.utils.StringUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.reflect.Field;
 
 /**
  * <p>
- * 框架配置
+ * Spi Config
  * </p>
  *
  * @author laizhiyuan
@@ -98,7 +98,7 @@ public class SpiConfiguration {
         if (singleton == null) {
             synchronized (SpiConfiguration.class) {
                 if (singleton == null) {
-                    LOGGER.debug("========================== init PropertiesConfiguration =============================");
+                    LOGGER.info("init spi config");
                     singleton = new SpiConfiguration();
                     Class clazz = singleton.getClass();
                     Class type;

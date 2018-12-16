@@ -61,6 +61,14 @@ public class Transaction implements Serializable {
      */
     private List<Participant> participants = new ArrayList<>();
 
+    public void updateVersion(){
+        this.version++;
+    }
+
+    public void updateLastUpdateTime(){
+        this.lastUpdateTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
+    }
+
     public Long getTxId() {
         return txId;
     }

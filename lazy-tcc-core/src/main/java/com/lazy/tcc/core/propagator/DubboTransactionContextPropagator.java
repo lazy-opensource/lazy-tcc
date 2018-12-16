@@ -18,12 +18,19 @@ public class DubboTransactionContextPropagator extends AbstractTransactionContex
     @Override
     public void setContext(TransactionContext context) {
 
-        RpcContext.getContext().setAttachment(TX_PROPAGATOR_KEY, JSON.toJSONString(context));
+        if (context != null) {
+            RpcContext.getContext().setAttachment(TX_PROPAGATOR_KEY, JSON.toJSONString(context));
+        }
     }
 
     @Override
     public TransactionContext getContext() {
 
-        return JSON.parseObject(RpcContext.getContext().getAttachment(TX_PROPAGATOR_KEY), TransactionContext.class);
+        String context = RpcContext.getContext().getAttachment(TX_PROPAGATOR_KEY);
+        if (context == null) {
+            return null;
+        }
+
+        return JSON.parseObject(context, TransactionContext.class);
     }
 }

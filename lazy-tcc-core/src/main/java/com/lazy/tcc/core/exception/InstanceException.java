@@ -10,6 +10,8 @@ package com.lazy.tcc.core.exception;
  */
 public class InstanceException extends RuntimeException {
 
+    static final long serialVersionUID = -7945346575676456L;
+
     public InstanceException() {
     }
 

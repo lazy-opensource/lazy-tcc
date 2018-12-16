@@ -1,5 +1,6 @@
 package com.lazy.tcc.core;
 
+import com.alibaba.fastjson.JSON;
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.core.exception.CancelException;
 import com.lazy.tcc.core.exception.ConfirmException;
@@ -7,12 +8,13 @@ import com.lazy.tcc.core.exception.TransactionManagerException;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.propagator.TransactionContextPropagator;
+import com.lazy.tcc.core.propagator.TransactionContextPropagatorSingleFactory;
 import com.lazy.tcc.core.repository.TransactionRepository;
 import com.lazy.tcc.core.repository.TransactionRepositoryFactory;
 import com.lazy.tcc.core.threadpool.SysDefaultThreadPool;
 
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.List;
 
 /**
  * <p>
@@ -25,9 +27,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class TransactionManager {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
-    private final ThreadLocal<LinkedList<Transaction>> currentThreadTransactionHolder = new ThreadLocal<>();
+    private final ThreadLocal<LinkedList<Long>> currentThreadTransactionIdHolder = new ThreadLocal<>();
     private final TransactionRepository transactionRepository = TransactionRepositoryFactory.create();
-    private final ConcurrentHashMap<Class<? extends TransactionContextPropagator>, TransactionContextPropagator> propagatorHolder = new ConcurrentHashMap<>();
 
     private static TransactionManager single;
 
@@ -49,7 +50,7 @@ public final class TransactionManager {
 
         Transaction transaction = new Transaction();
         transactionRepository.insert(transaction);
-        currentThreadTransactionHolder.get().push(transaction);
+        currentThreadTransactionIdHolder.get().push(transaction.getTxId());
 
         return transaction;
     }
@@ -58,7 +59,10 @@ public final class TransactionManager {
 
         final Transaction transaction = getCurrentTransaction();
 
-        assert transaction != null;
+        if (transaction == null) {
+            throw new TransactionManagerException("not exists active transaction in commit operation");
+        }
+
         transaction.setTxPhase(TransactionPhase.CONFIRM);
         transactionRepository.update(transaction);
 
@@ -83,17 +87,57 @@ public final class TransactionManager {
     }
 
     private void commitTransaction(Transaction transaction) {
-        for (Participant participant : transaction.getParticipants()) {
-            participant.confirm(this.getLocalTransactionContext());
+
+        TransactionContext context = this.getLocalTransactionContext();
+
+        if (context == null) {
+            throw new TransactionManagerException("not exists active context in commit operation");
+        }
+
+        if (!context.getTxId().equals(transaction.getTxId())) {
+
+            throw new TransactionManagerException(
+                    String.format("current context [%s] txId not match current transaction  [%s] txId in commit operation"
+                            , JSON.toJSONString(context), JSON.toJSONString(transaction))
+            );
+        }
+
+        List<Participant> allParticipants = transaction.getParticipants();
+
+        for (Participant participant : allParticipants) {
+
+            if (!participant.getTxId().equals(transaction.getTxId())) {
+
+                throw new TransactionManagerException(
+                        String.format("participant [%s] txId not match current transaction  [%s] txId in commit operation"
+                                , JSON.toJSONString(participant), JSON.toJSONString(transaction))
+                );
+            }
+
+            //confirm phase
+            participant.confirm(context);
         }
 
         this.transactionRepository.delete(transaction.getTxId());
     }
 
+
+    public void updateParticipant(List<Participant> participantList) {
+        Transaction currentTransaction = this.getCurrentTransaction();
+        assert currentTransaction != null;
+        currentTransaction.setParticipants(participantList);
+
+        this.transactionRepository.update(currentTransaction);
+    }
+
     public void rollback(boolean asyncCancel) {
 
         final Transaction transaction = getCurrentTransaction();
-        assert transaction != null;
+
+        if (transaction == null) {
+            throw new TransactionManagerException("not exists active transaction in rollback operation");
+        }
+
         transaction.setTxPhase(TransactionPhase.CANCEL);
 
         //If this step is unsuccessful, the timer compensates for rollback
@@ -117,22 +161,39 @@ public final class TransactionManager {
     }
 
     private void rollbackTransaction(Transaction transaction) {
-        try {
 
-            for (Participant participant : transaction.getParticipants()) {
-                participant.cancel(this.getLocalTransactionContext());
+        TransactionContext context = this.getLocalTransactionContext();
+
+        if (context == null) {
+            throw new TransactionManagerException("not exists active context in rollback operation");
+        }
+
+        if (!context.getTxId().equals(transaction.getTxId())) {
+
+            throw new TransactionManagerException(
+                    String.format("current context [%s] txId not match current transaction  [%s] txId in rollback operation"
+                            , JSON.toJSONString(context), JSON.toJSONString(transaction))
+            );
+        }
+
+        for (Participant participant : transaction.getParticipants()) {
+
+            if (!participant.getTxId().equals(transaction.getTxId())) {
+
+                throw new TransactionManagerException(
+                        String.format("participant [%s] txId not match current transaction  [%s] txId in rollback operation"
+                                , JSON.toJSONString(participant), JSON.toJSONString(transaction))
+                );
             }
 
-            transactionRepository.delete(transaction.getTxId());
-        } catch (Throwable rollbackException) {
-
-            LOGGER.warn("compensable transaction rollback failed, recovery job will try to rollback later.", rollbackException);
-            throw new CancelException(rollbackException);
+            participant.cancel(context);
         }
+
+        transactionRepository.delete(transaction.getTxId());
     }
 
-    public void participant(WeavingPointInfo pointInfo) {
-
+    public void participant(Transaction transaction) {
+        this.transactionRepository.update(transaction);
     }
 
     public boolean hasDistributedActiveTransaction(WeavingPointInfo pointInfo) {
@@ -143,12 +204,13 @@ public final class TransactionManager {
     }
 
     public boolean hasLocalActiveTransaction() {
-        return currentThreadTransactionHolder.get() != null && !currentThreadTransactionHolder.get().isEmpty();
+        return currentThreadTransactionIdHolder.get() != null && !currentThreadTransactionIdHolder.get().isEmpty();
     }
 
     public Transaction getCurrentTransaction() {
         if (hasLocalActiveTransaction()) {
-            return currentThreadTransactionHolder.get().peek();
+            Long txId = currentThreadTransactionIdHolder.get().peek();
+            return this.transactionRepository.findById(txId);
         }
         return null;
     }
@@ -157,9 +219,11 @@ public final class TransactionManager {
         if (hasLocalActiveTransaction()) {
             Transaction curTransaction = this.getCurrentTransaction();
             if (curTransaction == transaction) {
-                currentThreadTransactionHolder.get().pop();
+                currentThreadTransactionIdHolder.get().pop();
 
-                this.transactionRepository.delete(transaction.getTxId());
+                if (transaction.getParticipants().isEmpty()) {
+                    this.transactionRepository.delete(transaction.getTxId());
+                }
             }
         }
     }
@@ -178,6 +242,14 @@ public final class TransactionManager {
 
     }
 
+    public Transaction getDistributedTransaction(WeavingPointInfo pointInfo) {
+        TransactionContext context = this.getDistributedTransactionContext(pointInfo);
+        if (context == null) {
+            return null;
+        }
+        return this.transactionRepository.findById(context.getTxId());
+    }
+
 
     public TransactionContext getDistributedTransactionContext(WeavingPointInfo pointInfo) {
 
@@ -185,6 +257,7 @@ public final class TransactionManager {
 
         if (context == null) {
 
+            //if not found in current thread local, try to retrieve it from the transactional propagator
             return this.getTransactionPropagator(pointInfo).getContext();
         }
 
@@ -196,18 +269,7 @@ public final class TransactionManager {
 
         Class<? extends TransactionContextPropagator> cls = pointInfo.getCompensable().propagator();
 
-        if (propagatorHolder.isEmpty() || propagatorHolder.get(cls) == null) {
-
-            try {
-
-                TransactionContextPropagator propagator = cls.newInstance();
-                propagatorHolder.put(cls, propagator);
-            } catch (Exception e) {
-                throw new TransactionManagerException("Instantiating transaction propagator exceptions", e);
-            }
-        }
-
-        return propagatorHolder.get(cls);
+        return TransactionContextPropagatorSingleFactory.create(cls);
     }
 
 

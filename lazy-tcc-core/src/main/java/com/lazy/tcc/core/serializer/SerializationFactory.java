@@ -1,6 +1,6 @@
 package com.lazy.tcc.core.serializer;
 
-import com.lazy.tcc.core.SpiConfiguration;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 
 /**
  * <p>
@@ -10,9 +10,11 @@ import com.lazy.tcc.core.SpiConfiguration;
  * @author laizhiyuan
  * @since 2018/12/14.
  */
-public class SerializationFactory {
+public final class SerializationFactory {
 
-    private static Serialization serialization;
+    private SerializationFactory(){}
+
+    private static volatile Serialization serialization;
 
     public static Serialization create() {
         if (serialization == null) {

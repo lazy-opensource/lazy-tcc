@@ -1,0 +1,4 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lazy.tcc.core.autoconfig.LazyTccAutoConfiguration
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+  com.lazy.tcc.core.autoconfig.LazyTccFailureAnalyzer

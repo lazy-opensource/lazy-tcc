@@ -1,7 +1,7 @@
 package com.lazy.tcc.core.cache;
 
 
-import com.lazy.tcc.core.SpiConfiguration;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 
 /**
  * <p>
@@ -11,9 +11,11 @@ import com.lazy.tcc.core.SpiConfiguration;
  * @author laizhiyuan
  * @since 2018/12/14.
  */
-public class CacheFactory {
+public final class CacheFactory {
 
-    private static Cache cache;
+    private CacheFactory(){}
+
+    private static volatile Cache cache;
 
     public static <K, V> Cache<K, V> create() {
         if (cache == null) {

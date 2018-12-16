@@ -1,22 +1,31 @@
 package com.lazy.tcc.core;
 
+import com.alibaba.fastjson.JSON;
+import com.lazy.tcc.common.utils.StringUtils;
+import com.lazy.tcc.core.exception.TransactionManagerException;
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * <p>
- *     Invoker Definition
+ * Invoker Definition
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/14.
  */
-public class Invoker implements Serializable{
+@EqualsAndHashCode
+public class Invoker implements Serializable {
 
     /**
      * Serializable Version
      */
     private static final long serialVersionUID = -9943454654L;
 
+
+    private Long txId;
 
     private Class targetClass;
 
@@ -25,6 +34,15 @@ public class Invoker implements Serializable{
     private Class[] parameterTypes;
 
     private Object[] args;
+
+    public Long getTxId() {
+        return txId;
+    }
+
+    public Invoker setTxId(Long txId) {
+        this.txId = txId;
+        return this;
+    }
 
     public Class getTargetClass() {
         return targetClass;
@@ -62,7 +80,29 @@ public class Invoker implements Serializable{
         return this;
     }
 
-    public void invoker(TransactionContext context){
+    @SuppressWarnings({"unchecked"})
+    void invoker(TransactionContext context) {
+
+        if (!this.txId.equals(context.getTxId())) {
+            throw new TransactionManagerException(String.format("invoker [%s] txId not match current context [%s] txId"
+                    , JSON.toJSONString(this), JSON.toJSONString(context)));
+        }
+
+        if (StringUtils.isNotBlank(this.getMethodName())) {
+
+            try {
+
+                Object target = BeanFactory.getSingle().getApplicationContext().getBean(this.targetClass);
+
+                Method method = target.getClass().getMethod(this.getMethodName(), this.getParameterTypes());
+
+                //reflect invoker method
+                method.invoke(target, this.getArgs());
+            } catch (Exception e) {
+
+                throw new TransactionManagerException(e);
+            }
+        }
 
     }
 }

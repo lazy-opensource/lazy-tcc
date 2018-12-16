@@ -28,6 +28,15 @@ public class CompensableTransactionInterceptor {
      */
     private final DistributedTransactionProcessor processor = DistributedTransactionProcessor.getSingle();
 
+    /**
+     * interceptor specify compensable transaction annotation
+     * When the annotated Compensable is found in the method, it will be intercepted.
+     *
+     * @param joinPoint   JoinPoint {@link ProceedingJoinPoint}
+     * @param compensable Compensable {@link Compensable}
+     * @return {@link Object}
+     * @throws Throwable {@link Throwable}
+     */
     @Around("@annotation(compensable)")
     public Object around(ProceedingJoinPoint joinPoint, Compensable compensable) throws Throwable {
 

@@ -1,5 +1,7 @@
 package com.lazy.tcc.core;
 
+import lombok.EqualsAndHashCode;
+
 import java.io.Serializable;
 
 /**
@@ -10,15 +12,36 @@ import java.io.Serializable;
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public class Participant implements Serializable{
+@EqualsAndHashCode
+public class Participant implements Serializable {
 
     /**
      * Serializable Version
      */
     private static final long serialVersionUID = 4565437665462L;
 
+    private Long txId;
+    private String cancelIdempotentId;
     private Invoker confirmMethodInvoker;
     private Invoker cancelMethodInvoker;
+
+    public Long getTxId() {
+        return txId;
+    }
+
+    public String getCancelIdempotentId() {
+        return cancelIdempotentId;
+    }
+
+    public Participant setCancelIdempotentId(String cancelIdempotentId) {
+        this.cancelIdempotentId = cancelIdempotentId;
+        return this;
+    }
+
+    public Participant setTxId(Long txId) {
+        this.txId = txId;
+        return this;
+    }
 
     public Invoker getConfirmMethodInvoker() {
         return confirmMethodInvoker;
@@ -38,11 +61,11 @@ public class Participant implements Serializable{
         return this;
     }
 
-    void confirm(TransactionContext context){
+    void confirm(TransactionContext context) {
         confirmMethodInvoker.invoker(context);
     }
 
-    void cancel(TransactionContext context){
+    void cancel(TransactionContext context) {
         cancelMethodInvoker.invoker(context);
     }
 
