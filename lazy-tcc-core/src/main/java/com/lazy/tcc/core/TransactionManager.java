@@ -2,15 +2,17 @@ package com.lazy.tcc.core;
 
 import com.alibaba.fastjson.JSON;
 import com.lazy.tcc.common.enums.TransactionPhase;
+import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.CancelException;
 import com.lazy.tcc.core.exception.ConfirmException;
 import com.lazy.tcc.core.exception.TransactionManagerException;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
+import com.lazy.tcc.core.mapper.TransactionMapper;
 import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 import com.lazy.tcc.core.propagator.TransactionContextPropagatorSingleFactory;
-import com.lazy.tcc.core.repository.TransactionRepository;
 import com.lazy.tcc.core.repository.TransactionRepositoryFactory;
+import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.threadpool.SysDefaultThreadPool;
 
 import java.util.LinkedList;
@@ -18,7 +20,7 @@ import java.util.List;
 
 /**
  * <p>
- * Transaction Manager
+ * TransactionEntity Manager
  * </p>
  *
  * @author laizhiyuan
@@ -28,7 +30,7 @@ public final class TransactionManager {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
     private final ThreadLocal<LinkedList<Long>> currentThreadTransactionIdHolder = new ThreadLocal<>();
-    private final TransactionRepository transactionRepository = TransactionRepositoryFactory.create();
+    private final MysqlTransactionRepository transactionRepository = TransactionRepositoryFactory.create();
 
     private static TransactionManager single;
 
@@ -48,8 +50,8 @@ public final class TransactionManager {
 
     public Transaction begin() {
 
-        Transaction transaction = new Transaction();
-        transactionRepository.insert(transaction);
+        Transaction transaction = new Transaction().init();
+        transactionRepository.insert(TransactionMapper.INSTANCE.to(transaction));
         currentThreadTransactionIdHolder.get().push(transaction.getTxId());
 
         return transaction;
@@ -64,7 +66,7 @@ public final class TransactionManager {
         }
 
         transaction.setTxPhase(TransactionPhase.CONFIRM);
-        transactionRepository.update(transaction);
+        transactionRepository.update(TransactionMapper.INSTANCE.to(transaction));
 
         if (asyncCommit) {
 
@@ -127,7 +129,7 @@ public final class TransactionManager {
         assert currentTransaction != null;
         currentTransaction.setParticipants(participantList);
 
-        this.transactionRepository.update(currentTransaction);
+        this.transactionRepository.update(TransactionMapper.INSTANCE.to(currentTransaction));
     }
 
     public void rollback(boolean asyncCancel) {
@@ -141,7 +143,7 @@ public final class TransactionManager {
         transaction.setTxPhase(TransactionPhase.CANCEL);
 
         //If this step is unsuccessful, the timer compensates for rollback
-        transactionRepository.update(transaction);
+        transactionRepository.update(TransactionMapper.INSTANCE.to(transaction));
 
         if (asyncCancel) {
 
@@ -193,7 +195,7 @@ public final class TransactionManager {
     }
 
     public void participant(Transaction transaction) {
-        this.transactionRepository.update(transaction);
+        this.transactionRepository.update(TransactionMapper.INSTANCE.to(transaction));
     }
 
     public boolean hasDistributedActiveTransaction(WeavingPointInfo pointInfo) {
@@ -210,7 +212,8 @@ public final class TransactionManager {
     public Transaction getCurrentTransaction() {
         if (hasLocalActiveTransaction()) {
             Long txId = currentThreadTransactionIdHolder.get().peek();
-            return this.transactionRepository.findById(txId);
+            TransactionEntity entity = this.transactionRepository.findById(txId);
+            return entity == null ? null : TransactionMapper.INSTANCE.from(entity);
         }
         return null;
     }
@@ -247,7 +250,8 @@ public final class TransactionManager {
         if (context == null) {
             return null;
         }
-        return this.transactionRepository.findById(context.getTxId());
+        TransactionEntity entity = this.transactionRepository.findById(context.getTxId());
+        return entity == null ? null : TransactionMapper.INSTANCE.from(entity);
     }
 
 

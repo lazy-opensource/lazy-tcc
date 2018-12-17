@@ -1,5 +1,6 @@
 package com.lazy.tcc.core.annotation;
 
+import com.lazy.tcc.common.enums.ApplicationRole;
 import com.lazy.tcc.core.propagator.IdempotentContextPropagator;
 import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 
@@ -7,7 +8,7 @@ import java.lang.annotation.*;
 
 /**
  * <p>
- * Ensuring Idempotent by Frame
+ * Ensuring IdempotentEntity by Frame
  * Configuration can only be effectively guaranteed if the service provider implements
  * the method. Definition on the service provider interface can not be effectively
  * guaranteed. There are uncertainties, such as timeouts.
@@ -22,10 +23,24 @@ import java.lang.annotation.*;
 public @interface Idempotent {
 
     /**
-     * Transaction propagator
+     * TransactionEntity propagator
      *
      * @return {@link TransactionContextPropagator}
      */
     Class<? extends IdempotentContextPropagator> propagator();
+
+    /**
+     * Application role
+     *
+     * @return {@link ApplicationRole}
+     */
+    ApplicationRole applicationRole();
+
+    /**
+     * app key
+     *
+     * @return {@link String}
+     */
+    String appKey();
 
 }

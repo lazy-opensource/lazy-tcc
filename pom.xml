@@ -29,12 +29,25 @@
         <log4j.versionn>1.2.16</log4j.versionn>
         <logback.versionn>1.2.2</logback.versionn>
         <dubbo.version>2.6.2</dubbo.version>
+        <mapstruct.version>1.2.0.Final</mapstruct.version>
         <last.update.version>1.0.0-SNAPSHOT</last.update.version>
     </properties>
 
 
     <dependencyManagement>
         <dependencies>
+            <!-- mapstruct -->
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-jdk8</artifactId>
+                <version>${mapstruct.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.mapstruct</groupId>
+                <artifactId>mapstruct-processor</artifactId>
+                <version>${mapstruct.version}</version>
+                <scope>provided</scope>
+            </dependency>
             <!--dubbo-->
             <dependency>
                 <groupId>com.alibaba</groupId>

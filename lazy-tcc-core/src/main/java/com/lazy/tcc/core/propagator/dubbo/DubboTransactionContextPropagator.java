@@ -1,4 +1,4 @@
-package com.lazy.tcc.core.propagator;
+package com.lazy.tcc.core.propagator.dubbo;
 
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.fastjson.JSON;

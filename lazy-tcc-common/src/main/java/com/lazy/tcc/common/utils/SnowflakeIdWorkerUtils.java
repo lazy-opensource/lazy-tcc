@@ -28,13 +28,15 @@ package com.lazy.tcc.common.utils;
 @SuppressWarnings("all")
 public class SnowflakeIdWorkerUtils {
 
-    public static SnowflakeIdWorkerUtils INSTANCE;
+    private static SnowflakeIdWorkerUtils INSTANCE;
+
+    private SnowflakeIdWorkerUtils(){}
 
     static {
         INSTANCE = new SnowflakeIdWorkerUtils(0, 0);
     }
 
-    public static SnowflakeIdWorkerUtils getINSTANCE() {
+    public static SnowflakeIdWorkerUtils getSingle() {
         return INSTANCE;
     }
 

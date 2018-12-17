@@ -12,6 +12,11 @@ import com.lazy.tcc.common.enums.TransactionPhase;
  */
 public class TransactionContext {
 
+    /**
+     * Serializable Version
+     */
+    private static final long serialVersionUID = 8764437542L;
+
     private Long txId;
     private TransactionPhase txPhase;
 

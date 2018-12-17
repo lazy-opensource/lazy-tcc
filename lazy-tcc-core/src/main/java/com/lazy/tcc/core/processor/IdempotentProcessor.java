@@ -1,17 +1,17 @@
 package com.lazy.tcc.core.processor;
 
 import com.lazy.tcc.core.WeavingPointInfo;
-import com.lazy.tcc.core.processor.support.AbstractTransactionProcessor;
+import com.lazy.tcc.core.processor.support.AbstractProcessor;
 
 /**
  * <p>
- * DistributedParticipantProcessor Definition
+ * IdempotentProcessor Definition
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/15.
  */
-public final class IdempotentProcessor extends AbstractTransactionProcessor {
+public final class IdempotentProcessor extends AbstractProcessor {
 
     private static IdempotentProcessor single;
 
@@ -42,6 +42,7 @@ public final class IdempotentProcessor extends AbstractTransactionProcessor {
      */
     @Override
     protected Object doProcessor(WeavingPointInfo pointInfo) throws Throwable {
+
 
         return null;
     }

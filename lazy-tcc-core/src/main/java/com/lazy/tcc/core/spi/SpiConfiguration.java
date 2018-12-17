@@ -5,7 +5,8 @@ import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
-import com.lazy.tcc.core.repository.TransactionRepository;
+import com.lazy.tcc.core.repository.Repository;
+import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -24,7 +25,7 @@ public class SpiConfiguration {
 
     private Class<? extends Serialization> seriClassImpl;
     private Class<? extends Cache> cacheClassImpl;
-    private Class<? extends TransactionRepository> txRepository;
+    private Class<? extends Repository> txRepository;
     private String loggerAdapter;
     private String txTableName;
     private String idempotentTableName;
@@ -47,11 +48,11 @@ public class SpiConfiguration {
         return this;
     }
 
-    public Class<? extends TransactionRepository> getTxRepository() {
+    public Class<? extends Repository> getTxRepository() {
         return txRepository;
     }
 
-    public SpiConfiguration setTxRepository(Class<? extends TransactionRepository> txRepository) {
+    public SpiConfiguration setTxRepository(Class<? extends Repository> txRepository) {
         this.txRepository = txRepository;
         return this;
     }

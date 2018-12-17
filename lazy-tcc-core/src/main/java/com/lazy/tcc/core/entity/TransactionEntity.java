@@ -1,8 +1,9 @@
-package com.lazy.tcc.core;
+package com.lazy.tcc.core.entity;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
-import com.lazy.tcc.common.utils.SnowflakeIdWorkerUtils;
+import com.lazy.tcc.core.Participant;
+import com.lazy.tcc.core.entity.support.BasicEntity;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -16,24 +17,15 @@ import java.util.List;
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public class Transaction implements Serializable {
+public class TransactionEntity extends BasicEntity implements Serializable {
 
     /**
      * Serializable Version
      */
     private static final long serialVersionUID = -994345465462L;
 
-    public Transaction() {
+    public TransactionEntity() {
 
-    }
-
-    public Transaction init() {
-        this.txId = SnowflakeIdWorkerUtils.getSingle().nextId();
-        this.txPhase = TransactionPhase.TRY;
-        this.retryCount = 0;
-        this.createTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
-        this.lastUpdateTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
-        return this;
     }
 
     /**
@@ -78,7 +70,7 @@ public class Transaction implements Serializable {
         return txId;
     }
 
-    public Transaction setTxId(Long txId) {
+    public TransactionEntity setTxId(Long txId) {
         this.txId = txId;
         return this;
     }
@@ -87,7 +79,7 @@ public class Transaction implements Serializable {
         return txPhase;
     }
 
-    public Transaction setTxPhase(TransactionPhase txPhase) {
+    public TransactionEntity setTxPhase(TransactionPhase txPhase) {
         this.txPhase = txPhase;
         return this;
     }
@@ -96,7 +88,7 @@ public class Transaction implements Serializable {
         return retryCount;
     }
 
-    public Transaction setRetryCount(int retryCount) {
+    public TransactionEntity setRetryCount(int retryCount) {
         this.retryCount = retryCount;
         return this;
     }
@@ -105,7 +97,7 @@ public class Transaction implements Serializable {
         return createTime;
     }
 
-    public Transaction setCreateTime(String createTime) {
+    public TransactionEntity setCreateTime(String createTime) {
         this.createTime = createTime;
         return this;
     }
@@ -114,7 +106,7 @@ public class Transaction implements Serializable {
         return lastUpdateTime;
     }
 
-    public Transaction setLastUpdateTime(String lastUpdateTime) {
+    public TransactionEntity setLastUpdateTime(String lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
         return this;
     }
@@ -123,7 +115,7 @@ public class Transaction implements Serializable {
         return version;
     }
 
-    public Transaction setVersion(long version) {
+    public TransactionEntity setVersion(long version) {
         this.version = version;
         return this;
     }
@@ -132,9 +124,13 @@ public class Transaction implements Serializable {
         return participants;
     }
 
-    public Transaction setParticipants(List<Participant> participants) {
+    public TransactionEntity setParticipants(List<Participant> participants) {
         this.participants = participants;
         return this;
     }
 
+    @Override
+    public Serializable pkVal() {
+        return this.txId;
+    }
 }

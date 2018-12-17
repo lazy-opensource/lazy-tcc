@@ -4,17 +4,17 @@ import com.lazy.tcc.core.TransactionManager;
 import com.lazy.tcc.core.WeavingPointInfo;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
-import com.lazy.tcc.core.processor.TransactionProcessor;
+import com.lazy.tcc.core.processor.Processor;
 
 /**
  * <p>
- * AbstractTransactionInterceptor Definition
+ * AbstractProcessor Definition
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/15.
  */
-public abstract class AbstractTransactionProcessor implements TransactionProcessor {
+public abstract class AbstractProcessor implements Processor {
 
     /**
      * transactionManager

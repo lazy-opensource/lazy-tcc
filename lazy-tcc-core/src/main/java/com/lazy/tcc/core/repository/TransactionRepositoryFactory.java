@@ -1,5 +1,6 @@
 package com.lazy.tcc.core.repository;
 
+import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
 /**
@@ -13,16 +14,17 @@ import com.lazy.tcc.core.spi.SpiConfiguration;
 public final class TransactionRepositoryFactory {
 
 
-    private TransactionRepositoryFactory(){}
+    private TransactionRepositoryFactory() {
+    }
 
-    private static volatile TransactionRepository repository;
+    private static volatile MysqlTransactionRepository repository;
 
-    public static TransactionRepository create() {
+    public static MysqlTransactionRepository create() {
         if (repository == null) {
             synchronized (TransactionRepositoryFactory.class) {
                 if (repository == null) {
                     try {
-                        repository = SpiConfiguration.getInstance().getTxRepository().newInstance();
+                        repository = (MysqlTransactionRepository) SpiConfiguration.getInstance().getTxRepository().newInstance();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

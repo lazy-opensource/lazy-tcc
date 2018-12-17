@@ -20,7 +20,7 @@ import java.lang.annotation.*;
 public @interface Compensable {
 
     /**
-     * Transaction communication mode
+     * TransactionEntity communication mode
      *
      * @return {@link Propagation}
      * @see Propagation
@@ -56,7 +56,7 @@ public @interface Compensable {
     boolean asyncCancel() default false;
 
     /**
-     * Transaction propagator
+     * TransactionEntity propagator
      *
      * @return {@link TransactionContextPropagator}
      */

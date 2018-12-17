@@ -1,7 +1,8 @@
 package com.lazy.tcc.core.autoconfig;
 
 import com.lazy.tcc.core.BeanFactory;
-import com.lazy.tcc.core.interceptor.CompensableTransactionInterceptor;
+import com.lazy.tcc.core.interceptor.IdempotentInterceptor;
+import com.lazy.tcc.core.interceptor.TransactionInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -22,8 +23,13 @@ public class LazyTccAutoConfiguration {
     }
 
     @Bean
-    public CompensableTransactionInterceptor compensableTransactionInterceptor() {
-        return new CompensableTransactionInterceptor();
+    public TransactionInterceptor transactionInterceptor() {
+        return new TransactionInterceptor();
+    }
+
+    @Bean
+    public IdempotentInterceptor idempotentInterceptor() {
+        return new IdempotentInterceptor();
     }
 
 }

@@ -2,52 +2,31 @@ package com.lazy.tcc.core.repository.jdbc;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
-import com.lazy.tcc.core.Transaction;
-import com.lazy.tcc.core.exception.ConnectionIOException;
+import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
-import com.lazy.tcc.core.repository.support.AbstractCacheTransactionRepository;
-import com.lazy.tcc.core.serializer.Serialization;
-import com.lazy.tcc.core.serializer.SerializationFactory;
+import com.lazy.tcc.core.repository.support.AbstractCacheRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
-import javax.sql.DataSource;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
  * <p>
- * JdbcTransactionRepository Definition
+ * MysqlTransactionRepository Definition
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepository {
-
-    private DataSource dataSource;
-    private Serialization serialization = SerializationFactory.create();
-
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    public JdbcCacheTransactionRepository setDataSource(DataSource dataSource) {
-        this.dataSource = dataSource;
-        return this;
-    }
-
-    private Connection getConnection() {
-        try {
-            return this.dataSource.getConnection();
-        } catch (SQLException e) {
-            throw new ConnectionIOException(e);
-        }
-    }
+public class MysqlTransactionRepository extends AbstractCacheRepository<TransactionEntity, Long> {
 
     @Override
-    public int doInsert(Transaction transaction) {
+    public int doInsert(TransactionEntity transaction) {
         Connection connection = null;
         PreparedStatement stmt = null;
 
@@ -80,28 +59,8 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
         }
     }
 
-    private void releaseConnection(Connection con) {
-        try {
-            if (con != null && !con.isClosed()) {
-                con.close();
-            }
-        } catch (SQLException e) {
-            throw new TransactionCrudException(e);
-        }
-    }
-
-    private void closeStatement(Statement stmt) {
-        try {
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
-        } catch (Exception ex) {
-            throw new TransactionCrudException(ex);
-        }
-    }
-
     @Override
-    public int doUpdate(Transaction transaction) {
+    public int doUpdate(TransactionEntity transaction) {
         Connection connection = null;
         PreparedStatement stmt = null;
 
@@ -170,11 +129,12 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public Transaction doFindById(Long id) {
+    public TransactionEntity doFindById(Long id) {
         Connection connection = null;
         PreparedStatement stmt = null;
+        ResultSet resultSet = null;
 
-        Transaction transaction = null;
+        TransactionEntity transaction = null;
         try {
             connection = this.getConnection();
 
@@ -183,9 +143,9 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
 
             stmt.setLong(1, id);
 
-            ResultSet resultSet = stmt.executeQuery();
+            resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                transaction = new Transaction();
+                transaction = new TransactionEntity();
                 transaction.setLastUpdateTime(resultSet.getString("last_update_time"));
                 transaction.setCreateTime(resultSet.getString("create_time"));
                 transaction.setVersion(resultSet.getLong("version"));
@@ -209,10 +169,21 @@ public class JdbcCacheTransactionRepository extends AbstractCacheTransactionRepo
             throw new TransactionCrudException(e);
         } finally {
 
+            closeResultSet(resultSet);
             closeStatement(stmt);
             this.releaseConnection(connection);
         }
 
         return transaction;
+    }
+
+    @Override
+    public int createTable() {
+        return 0;
+    }
+
+    @Override
+    public boolean exists(Long aLong) {
+        return false;
     }
 }

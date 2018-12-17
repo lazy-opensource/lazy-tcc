@@ -5,7 +5,7 @@ import com.lazy.tcc.core.WeavingPointInfo;
 import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
-import com.lazy.tcc.core.processor.DistributedTransactionProcessor;
+import com.lazy.tcc.core.processor.TransactionProcessor;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -19,14 +19,14 @@ import org.aspectj.lang.annotation.Aspect;
  * @since 2018/12/15.
  */
 @Aspect
-public class CompensableTransactionInterceptor {
+public class TransactionInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompensableTransactionInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionInterceptor.class);
 
     /**
      * processor
      */
-    private final DistributedTransactionProcessor processor = DistributedTransactionProcessor.getSingle();
+    private final TransactionProcessor processor = TransactionProcessor.getSingle();
 
     /**
      * interceptor specify compensable transaction annotation

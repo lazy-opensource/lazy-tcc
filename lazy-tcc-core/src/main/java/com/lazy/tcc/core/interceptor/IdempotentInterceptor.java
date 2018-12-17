@@ -21,7 +21,7 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class IdempotentInterceptor {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(CompensableTransactionInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(TransactionInterceptor.class);
 
     /**
      * processor

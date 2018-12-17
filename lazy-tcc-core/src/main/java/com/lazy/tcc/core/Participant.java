@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * Transaction participants
+ * TransactionEntity participants
  * </p>
  *
  * @author laizhiyuan

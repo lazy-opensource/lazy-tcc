@@ -1,17 +1,17 @@
-package com.lazy.tcc.core.repository.zookeeper;
+package com.lazy.tcc.core.repository.redis;
 
 import com.lazy.tcc.core.Transaction;
-import com.lazy.tcc.core.repository.support.AbstractCacheTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractCacheRepository;
 
 /**
  * <p>
- * ZookeeperTransactionRepository Definition
+ * RedisRepository Definition
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public class ZookeeperCacheTransactionRepository extends AbstractCacheTransactionRepository {
+public class RedisRepository extends AbstractCacheRepository {
 
 
     @Override
