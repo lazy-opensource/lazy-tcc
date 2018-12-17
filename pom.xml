@@ -29,6 +29,7 @@
         <log4j.versionn>1.2.16</log4j.versionn>
         <logback.versionn>1.2.2</logback.versionn>
         <dubbo.version>2.6.2</dubbo.version>
+        <last.update.version>1.0.0-SNAPSHOT</last.update.version>
     </properties>
 
 
@@ -139,6 +140,16 @@
                 <version>1.10</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.lazy.tcc</groupId>
+                <artifactId>lazy-tcc-common</artifactId>
+                <version>${last.update.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lazy.tcc</groupId>
+                <artifactId>lazy-tcc-idempotency</artifactId>
+                <version>${last.update.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 

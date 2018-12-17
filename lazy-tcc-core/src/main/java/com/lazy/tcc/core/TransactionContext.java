@@ -14,16 +14,6 @@ public class TransactionContext {
 
     private Long txId;
     private TransactionPhase txPhase;
-    private TransactionType txType;
-
-    public TransactionType getTxType() {
-        return txType;
-    }
-
-    public TransactionContext setTxType(TransactionType txType) {
-        this.txType = txType;
-        return this;
-    }
 
     public Long getTxId() {
         return txId;

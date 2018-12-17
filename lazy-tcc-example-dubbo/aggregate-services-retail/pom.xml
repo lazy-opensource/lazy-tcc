@@ -9,7 +9,7 @@
     </parent>
     <artifactId>aggregate-services-retail</artifactId>
     <packaging>jar</packaging>
-    <name>aggregate-services-order</name>
+    <name>aggregate-services-retail</name>
 
     <dependencies>
         <dependency>

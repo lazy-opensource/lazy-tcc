@@ -1,7 +1,7 @@
 package com.lazy.tcc.core.annotation;
 
 import com.lazy.tcc.common.enums.Propagation;
-import com.lazy.tcc.core.propagator.LocalTransactionContextPropagator;
+import com.lazy.tcc.core.propagator.DefaultTransactionContextPropagator;
 import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 
 import java.lang.annotation.*;
@@ -60,7 +60,7 @@ public @interface Compensable {
      *
      * @return {@link TransactionContextPropagator}
      */
-    Class<? extends TransactionContextPropagator> propagator() default LocalTransactionContextPropagator.class;
+    Class<? extends TransactionContextPropagator> propagator() default DefaultTransactionContextPropagator.class;
 
 
 }

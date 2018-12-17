@@ -27,6 +27,16 @@ public class SpiConfiguration {
     private Class<? extends TransactionRepository> txRepository;
     private String loggerAdapter;
     private String txTableName;
+    private String idempotentTableName;
+
+    public String getIdempotentTableName() {
+        return idempotentTableName;
+    }
+
+    public SpiConfiguration setIdempotentTableName(String idempotentTableName) {
+        this.idempotentTableName = idempotentTableName;
+        return this;
+    }
 
     public String getTxTableName() {
         return txTableName;

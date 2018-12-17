@@ -1,5 +1,8 @@
 package com.lazy.tcc.core.annotation;
 
+import com.lazy.tcc.core.propagator.IdempotentContextPropagator;
+import com.lazy.tcc.core.propagator.TransactionContextPropagator;
+
 import java.lang.annotation.*;
 
 /**
@@ -16,6 +19,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD})
 @Inherited
-public @interface AutoIdempotent {
+public @interface Idempotent {
+
+    /**
+     * Transaction propagator
+     *
+     * @return {@link TransactionContextPropagator}
+     */
+    Class<? extends IdempotentContextPropagator> propagator();
 
 }
