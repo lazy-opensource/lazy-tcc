@@ -7,6 +7,7 @@ import com.lazy.tcc.core.annotation.Idempotent;
 import com.lazy.tcc.core.exception.TransactionManagerException;
 import com.lazy.tcc.core.propagator.IdempotentContextPropagator;
 import com.lazy.tcc.core.propagator.IdempotentContextPropagatorSingleFactory;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
@@ -96,7 +97,7 @@ public class Invoker implements Serializable {
     }
 
     @SuppressWarnings({"unchecked"})
-    void invoker(TransactionContext context) {
+    public void invoker(TransactionContext context) {
 
         if (!this.txId.equals(context.getTxId())) {
             throw new TransactionManagerException(String.format("invoker [%s] txId not match current transaction context [%s] txId"
@@ -117,8 +118,10 @@ public class Invoker implements Serializable {
                 if (idempotent != null && idempotent.applicationRole().equals(ApplicationRole.CONSUMER)) {
 
                     IdempotentContextPropagatorSingleFactory.create(IdempotentContextPropagator.class).setIdempotentContext(
-                            new IdempotentContext().setReqSerialNum(this.reqSerialNum)
-                                    .setTxId(this.txId)
+                            new IdempotentContext().
+                                    setPk(new com.lazy.tcc.core.Idempotent.IdempotentPk()
+                                            .setAppKey(SpiConfiguration.getInstance().getIdempotentAppKey())
+                                            .setReqSerialNum(this.reqSerialNum))
                                     .setTxPhase(context.getTxPhase())
                     );
                 }

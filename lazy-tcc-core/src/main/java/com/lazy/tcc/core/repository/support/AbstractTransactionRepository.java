@@ -2,6 +2,8 @@ package com.lazy.tcc.core.repository.support;
 
 import com.lazy.tcc.core.entity.TransactionEntity;
 
+import java.util.List;
+
 /**
  * <p>
  *     AbstractTransactionRepository
@@ -22,4 +24,7 @@ public abstract class AbstractTransactionRepository extends AbstractCacheReposit
     public boolean exists(Long aLong) {
         return false;
     }
+
+    public abstract List<TransactionEntity> findAllFailure();
+
 }

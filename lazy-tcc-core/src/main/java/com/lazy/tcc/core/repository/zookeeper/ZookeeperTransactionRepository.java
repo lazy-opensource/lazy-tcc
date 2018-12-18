@@ -3,6 +3,8 @@ package com.lazy.tcc.core.repository.zookeeper;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 
+import java.util.List;
+
 /**
  * <p>
  * ZookeeperRepository Definition
@@ -42,5 +44,10 @@ public class ZookeeperTransactionRepository extends AbstractTransactionRepositor
     @Override
     public boolean exists(Long aLong) {
         return false;
+    }
+
+    @Override
+    public List<TransactionEntity> findAllFailure() {
+        return null;
     }
 }

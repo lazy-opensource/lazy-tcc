@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * <p>
- * TransactionEntity interface definition
+ * Transaction definition
  * </p>
  *
  * @author laizhiyuan

@@ -3,6 +3,8 @@ package com.lazy.tcc.core.repository.redis;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 
+import java.util.List;
+
 /**
  * <p>
  * RedisRepository Definition
@@ -42,5 +44,10 @@ public class RedisTransactionRepository extends AbstractTransactionRepository {
     @Override
     public boolean exists(Long aLong) {
         return false;
+    }
+
+    @Override
+    public List<TransactionEntity> findAllFailure() {
+        return null;
     }
 }

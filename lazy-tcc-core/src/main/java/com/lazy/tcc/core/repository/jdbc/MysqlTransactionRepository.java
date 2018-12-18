@@ -13,6 +13,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -145,26 +146,10 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
             resultSet = stmt.executeQuery();
             if (resultSet.next()) {
-                transaction = new TransactionEntity();
-                transaction.setLastUpdateTime(resultSet.getString("last_update_time"));
-                transaction.setCreateTime(resultSet.getString("create_time"));
-                transaction.setVersion(resultSet.getLong("version"));
-                transaction.setTxPhase(TransactionPhase.valueOf(resultSet.getInt("tx_phase")));
-
-
-                try {
-                    transaction.setParticipants(serialization.deserialize(
-                            new ByteArrayInputStream(resultSet.getBytes("content_byte")))
-                            .readObject(List.class));
-                } catch (Exception e) {
-
-                    throw new TransactionCrudException(e);
-                }
-                transaction.setRetryCount(resultSet.getInt("retry_count"));
-                transaction.setTxId(resultSet.getLong("tx_id"));
+                transaction = this.getRow(resultSet);
             }
 
-        } catch (SQLException e) {
+        } catch (Exception e) {
 
             throw new TransactionCrudException(e);
         } finally {
@@ -186,4 +171,57 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
     public boolean exists(Long aLong) {
         return false;
     }
+
+    @SuppressWarnings("unchecked")
+    private TransactionEntity getRow(ResultSet resultSet) throws Exception {
+        return new TransactionEntity()
+                .setLastUpdateTime(resultSet.getString("last_update_time"))
+                .setCreateTime(resultSet.getString("create_time"))
+                .setVersion(resultSet.getLong("version"))
+                .setTxPhase(TransactionPhase.valueOf(resultSet.getInt("tx_phase")))
+                .setParticipants(serialization.deserialize(
+                        new ByteArrayInputStream(resultSet.getBytes("content_byte")))
+                        .readObject(List.class))
+                .setRetryCount(resultSet.getInt("retry_count"))
+                .setTxId(resultSet.getLong("tx_id"));
+    }
+
+    @Override
+    public List<TransactionEntity> findAllFailure() {
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+        List<TransactionEntity> list = new ArrayList<>();
+        TransactionEntity transaction = null;
+        try {
+            connection = this.getConnection();
+
+            String builder = "select * from " + SpiConfiguration.getInstance().getTxTableName()
+                    + " where create_time <= ? and retry_count < ?";
+            stmt = connection.prepareStatement(builder);
+
+            stmt.setString(1,
+                    DateUtils.getBeforeByMinuteTime(SpiConfiguration.getInstance().getCompensationMinuteInterval(),
+                            DateUtils.YYYY_MM_DD_HH_MM_SS));
+            stmt.setInt(2, SpiConfiguration.getInstance().getRetryCount());
+
+            resultSet = stmt.executeQuery();
+            while (resultSet.next()) {
+                list.add(this.getRow(resultSet));
+            }
+
+        } catch (Exception e) {
+
+            throw new TransactionCrudException(e);
+        } finally {
+
+            closeResultSet(resultSet);
+            closeStatement(stmt);
+            this.releaseConnection(connection);
+        }
+
+        return list;
+    }
+
+
 }

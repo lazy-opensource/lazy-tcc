@@ -3,14 +3,20 @@ package com.lazy.tcc.core.spi;
 import com.lazy.tcc.common.utils.ReflectUtils;
 import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
+import com.lazy.tcc.core.cache.guava.GoogleGuavaCache;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
+import com.lazy.tcc.core.repository.jdbc.MysqlIdempotentRepository;
+import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
+import com.lazy.tcc.core.serializer.kryo.KryoSerialization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * <p>
@@ -23,13 +29,66 @@ import java.lang.reflect.Field;
 @ConfigurationProperties("lazy.tcc.config")
 public class SpiConfiguration {
 
-    private Class<? extends Serialization> seriClassImpl;
-    private Class<? extends Cache> cacheClassImpl;
-    private Class<? extends AbstractTransactionRepository> txRepository;
-    private Class<? extends AbstractIdempotentRepository> idempotentRepository;
-    private String loggerAdapter;
-    private String txTableName;
-    private String idempotentTableName;
+    private Class<? extends Serialization> seriClassImpl = KryoSerialization.class;
+    private Class<? extends Cache> cacheClassImpl = GoogleGuavaCache.class;
+    private Class<? extends AbstractTransactionRepository> txRepository = MysqlTransactionRepository.class;
+    private Class<? extends AbstractIdempotentRepository> idempotentRepository = MysqlIdempotentRepository.class;
+    private String loggerAdapter = "slf4j";
+    private String txTableName = "lazy_tcc_transaction";
+    private String idempotentTableName = "lazy_tcc_idempotent";
+    private String idempotentAppKey = defaultAppKey();
+    private int retryCount = 5;
+    private int keepRequestLogDayCount = 31;
+    private int compensationMinuteInterval = 10;
+
+    private static String defaultAppKey() {
+        InetAddress addr;
+        try {
+            addr = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            throw new RuntimeException(e);
+        }
+        String ip = addr.getHostAddress();
+        String hostName = addr.getHostName();
+
+        return String.format("%s_%s", hostName, ip);
+    }
+
+    public String getIdempotentAppKey() {
+        return idempotentAppKey;
+    }
+
+    public SpiConfiguration setIdempotentAppKey(String idempotentAppKey) {
+        this.idempotentAppKey = idempotentAppKey;
+        return this;
+    }
+
+    public int getKeepRequestLogDayCount() {
+        return keepRequestLogDayCount;
+    }
+
+    public SpiConfiguration setKeepRequestLogDayCount(int keepRequestLogDayCount) {
+        this.keepRequestLogDayCount = keepRequestLogDayCount;
+        return this;
+    }
+
+    public int getCompensationMinuteInterval() {
+        return compensationMinuteInterval;
+    }
+
+    public SpiConfiguration setCompensationMinuteInterval(int compensationMinuteInterval) {
+        this.compensationMinuteInterval = compensationMinuteInterval;
+        return this;
+    }
+
+    public int getRetryCount() {
+        return retryCount;
+    }
+
+    public SpiConfiguration setRetryCount(int retryCount) {
+        this.retryCount = retryCount;
+        return this;
+    }
 
     public Class<? extends AbstractIdempotentRepository> getIdempotentRepository() {
         return idempotentRepository;

@@ -4,7 +4,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * IdempotentEntity Definition
+ * Idempotent Definition
  * </p>
  *
  * @author laizhiyuan

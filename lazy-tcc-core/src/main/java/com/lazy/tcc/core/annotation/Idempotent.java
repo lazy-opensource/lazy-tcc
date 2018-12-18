@@ -36,11 +36,4 @@ public @interface Idempotent {
      */
     ApplicationRole applicationRole();
 
-    /**
-     * app key
-     *
-     * @return {@link String}
-     */
-    String appKey();
-
 }

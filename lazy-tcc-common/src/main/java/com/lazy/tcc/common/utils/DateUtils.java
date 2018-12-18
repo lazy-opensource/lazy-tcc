@@ -13,21 +13,51 @@ import java.util.Date;
  */
 public abstract class DateUtils {
 
-    public static final String YYYY_MM_DD_HH_MM_SS  = "yyyy-MM-dd HH:mm:ss";
-    public static final String YYYY_MM_DD  = "yyyy-MM-dd";
+    public static final String YYYY_MM_DD_HH_MM_SS = "yyyy-MM-dd HH:mm:ss";
+    public static final String YYYY_MM_DD = "yyyy-MM-dd";
     public static final String DEFAULT_FORMAT = YYYY_MM_DD_HH_MM_SS;
 
     private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_FORMAT);
 
-    public static synchronized SimpleDateFormat getSimpleDateFormat(String format){
-        if (format == null || DEFAULT_FORMAT.equals(format)){
+    public static synchronized SimpleDateFormat getSimpleDateFormat(String format) {
+        if (format == null || DEFAULT_FORMAT.equals(format)) {
             return simpleDateFormat;
-        }else {
+        } else {
             return new SimpleDateFormat(format);
         }
     }
 
-    public static Date getCurrentDate(String format){
+
+    public static String getBeforeByMinuteTime(int minute, String format) {
+
+        Calendar beforeTime = Calendar.getInstance();
+        beforeTime.add(Calendar.MINUTE, -minute);
+
+        Date beforeD = beforeTime.getTime();
+
+        return new SimpleDateFormat(format).format(beforeD);
+    }
+
+
+    public static String getBeforeByHourTime(int hour, String format) {
+        String returnstr = "";
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY) - hour);
+        SimpleDateFormat df = new SimpleDateFormat(format);
+        returnstr = df.format(calendar.getTime());
+        return returnstr;
+    }
+
+    public static String getBeforeByDayTime(int day, String format) {
+        Calendar calendar1 = Calendar.getInstance();
+        SimpleDateFormat sdf1 = new SimpleDateFormat(format);
+        calendar1.add(Calendar.DATE, -day);
+
+        return sdf1.format(calendar1.getTime());
+    }
+
+
+    public static Date getCurrentDate(String format) {
         SimpleDateFormat simpleDateFormat = getSimpleDateFormat(format);
         String currentDateStr = simpleDateFormat.format(new Date());
         try {
@@ -39,12 +69,12 @@ public abstract class DateUtils {
         return null;
     }
 
-    public static Timestamp getCurrentTimestamp(String format){
+    public static Timestamp getCurrentTimestamp(String format) {
         return Timestamp.valueOf(getCurrentDateStr(format));
     }
 
-    public static Timestamp string2Timestamp(String time){
-        if (time == null || "".equals(time)){
+    public static Timestamp string2Timestamp(String time) {
+        if (time == null || "".equals(time)) {
             return null;
         }
 
@@ -52,8 +82,8 @@ public abstract class DateUtils {
         return timestamp;
     }
 
-    public static Long stringTime2Unix(String time, String format){
-        if (time == null || "".equals(time)){
+    public static Long stringTime2Unix(String time, String format) {
+        if (time == null || "".equals(time)) {
             return null;
         }
         DateFormat simpleDateFormat = getSimpleDateFormat(format);
@@ -67,7 +97,7 @@ public abstract class DateUtils {
         return null;
     }
 
-    public static String getCurrentDateStr(String format){
+    public static String getCurrentDateStr(String format) {
         SimpleDateFormat simpleDateFormat = getSimpleDateFormat(format);
         String currentDateStr = simpleDateFormat.format(new Date());
         return currentDateStr;
@@ -75,15 +105,16 @@ public abstract class DateUtils {
 
     /**
      * Date -> String
+     *
      * @param date
      * @param format
      * @return
      */
-    public static String date2Str(Date date, String format){
-        if (date == null){
+    public static String date2Str(Date date, String format) {
+        if (date == null) {
             return "";
         }
-        if (StringUtils.isBlank(format)){
+        if (StringUtils.isBlank(format)) {
             format = DEFAULT_FORMAT;
         }
         SimpleDateFormat formatter = new SimpleDateFormat(format);
@@ -93,28 +124,30 @@ public abstract class DateUtils {
 
     /**
      * String -> Date
+     *
      * @param strDate
      * @param dateFormat
      * @return
      */
     public static Date strToUtilDate(String strDate, String dateFormat) {
-             SimpleDateFormat sf = new SimpleDateFormat(dateFormat);
-             Date date = null;
-             try {
-                     date = sf.parse(strDate);
-                } catch (ParseException e) {
-                     e.printStackTrace();
-                 }
-             return date;
-         }
+        SimpleDateFormat sf = new SimpleDateFormat(dateFormat);
+        Date date = null;
+        try {
+            date = sf.parse(strDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
 
     /**
      * Timestamp -> String
+     *
      * @param timestamp
      * @return
      */
-    public static String timestamp2Str(Timestamp timestamp){
-        if (timestamp == null){
+    public static String timestamp2Str(Timestamp timestamp) {
+        if (timestamp == null) {
             return "";
         }
         DateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_FORMAT);
@@ -124,6 +157,7 @@ public abstract class DateUtils {
 
     /**
      * 返回制定范围日期，1为明天，-1为昨天，以此类推
+     *
      * @param today
      * @param range
      * @return
@@ -138,17 +172,18 @@ public abstract class DateUtils {
     /**
      * 获取指定日期是星期几
      * 参数为null时表示获取当前日期是星期几
+     *
      * @param date
      * @return
      */
     public static String getWeekOfDate(Date date) {
         String[] weekOfDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
         Calendar calendar = Calendar.getInstance();
-        if(date != null){
+        if (date != null) {
             calendar.setTime(date);
         }
         int w = calendar.get(Calendar.DAY_OF_WEEK) - 1;
-        if (w < 0){
+        if (w < 0) {
             w = 0;
         }
         return weekOfDays[w];
