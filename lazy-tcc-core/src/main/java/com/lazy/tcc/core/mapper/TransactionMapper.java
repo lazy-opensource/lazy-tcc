@@ -2,6 +2,10 @@ package com.lazy.tcc.core.mapper;
 
 import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.entity.TransactionEntity;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+import org.mapstruct.factory.Mappers;
 
 /**
  * <p>
@@ -16,10 +20,30 @@ public interface TransactionMapper {
 
     TransactionMapper INSTANCE = Mappers.getMapper(TransactionMapper.class);
 
-    @Mapper
+    @Mappings(
+            {
+                    @Mapping(target = "txId", source = "to.txId"),
+                    @Mapping(target = "txPhase", source = "to.txPhase"),
+                    @Mapping(target = "retryCount", source = "to.retryCount"),
+                    @Mapping(target = "createTime", source = "to.createTime"),
+                    @Mapping(target = "lastUpdateTime", source = "to.lastUpdateTime"),
+                    @Mapping(target = "version", source = "to.version"),
+                    @Mapping(target = "participants", source = "to.participants"),
+            }
+    )
     Transaction from(TransactionEntity to);
 
-    @Mapper
+    @Mappings(
+            {
+                    @Mapping(target = "txId", source = "from.txId"),
+                    @Mapping(target = "txPhase", source = "from.txPhase"),
+                    @Mapping(target = "retryCount", source = "from.retryCount"),
+                    @Mapping(target = "createTime", source = "from.createTime"),
+                    @Mapping(target = "lastUpdateTime", source = "from.lastUpdateTime"),
+                    @Mapping(target = "version", source = "from.version"),
+                    @Mapping(target = "participants", source = "from.participants"),
+            }
+    )
     TransactionEntity to(Transaction from);
 
 }

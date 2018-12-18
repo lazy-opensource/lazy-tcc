@@ -3,7 +3,7 @@ package com.lazy.tcc.core.repository.jdbc;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.IdempotentEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
-import com.lazy.tcc.core.repository.support.AbstractDataSourceRepository;
+import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
 import java.sql.Connection;
@@ -12,14 +12,15 @@ import java.sql.ResultSet;
 
 /**
  * <p>
- *
+ * <p>
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/17.
  */
-public class MysqlIdempotentRepository extends AbstractDataSourceRepository<IdempotentEntity, IdempotentEntity.IdempotentPk> {
+public class MysqlIdempotentRepository extends AbstractIdempotentRepository {
 
+    @Override
     public int createTable() {
 
         Connection connection = null;

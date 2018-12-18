@@ -11,14 +11,27 @@ package com.lazy.tcc.common.enums;
 public enum TransactionPhase {
 
 
-    TRY(1),
-    CONFIRM(2),
-    CANCEL(3),;
+    TRY(1, "try"),
+    CONFIRM(2, "confirm"),
+    CANCEL(3, "cancel"),
+
+    ;
 
     private int val;
+    private String desc;
 
-    TransactionPhase(int val) {
+    TransactionPhase(int val, String desc) {
         this.val = val;
+        this.desc = desc;
+    }
+
+    public String getDesc() {
+        return desc;
+    }
+
+    public TransactionPhase setDesc(String desc) {
+        this.desc = desc;
+        return this;
     }
 
     public int getVal() {

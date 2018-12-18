@@ -15,22 +15,22 @@ import java.util.concurrent.ConcurrentHashMap;
 public final class TransactionContextPropagatorSingleFactory {
 
     private final static ConcurrentHashMap<Class<? extends TransactionContextPropagator>,
-            TransactionContextPropagator> propagatorHolder = new ConcurrentHashMap<>();
+            TransactionContextPropagator> PROPAGATOR_HOLDER = new ConcurrentHashMap<>();
 
 
     public static TransactionContextPropagator create(Class<? extends TransactionContextPropagator> clazz) {
 
-        if (propagatorHolder.isEmpty() || propagatorHolder.get(clazz) == null) {
+        if (PROPAGATOR_HOLDER.isEmpty() || PROPAGATOR_HOLDER.get(clazz) == null) {
 
             try {
 
                 TransactionContextPropagator propagator = clazz.newInstance();
-                propagatorHolder.put(clazz, propagator);
+                PROPAGATOR_HOLDER.put(clazz, propagator);
             } catch (Exception e) {
                 throw new TransactionManagerException("Instantiating transaction propagator exceptions", e);
             }
         }
 
-        return propagatorHolder.get(clazz);
+        return PROPAGATOR_HOLDER.get(clazz);
     }
 }

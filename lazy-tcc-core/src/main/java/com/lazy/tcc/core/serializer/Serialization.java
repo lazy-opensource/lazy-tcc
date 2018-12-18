@@ -7,6 +7,7 @@ import java.io.OutputStream;
 /**
  * <p>
  * Serialization
+ * This serializer component is referred from dubbo
  * </p>
  *
  * @author laizhiyuan

@@ -19,9 +19,28 @@ public class IdempotentContext implements Serializable {
      */
     private static final long serialVersionUID = 6774623452L;
 
-    private String reqSerialNum;
+    private Idempotent.IdempotentPk pk;
     private Long txId;
     private TransactionPhase txPhase;
+    private String businessRec;
+
+    public String getBusinessRec() {
+        return businessRec;
+    }
+
+    public IdempotentContext setBusinessRec(String businessRec) {
+        this.businessRec = businessRec;
+        return this;
+    }
+
+    public Idempotent.IdempotentPk getPk() {
+        return pk;
+    }
+
+    public IdempotentContext setPk(Idempotent.IdempotentPk pk) {
+        this.pk = pk;
+        return this;
+    }
 
     public Long getTxId() {
         return txId;
@@ -41,12 +60,5 @@ public class IdempotentContext implements Serializable {
         return this;
     }
 
-    public String getReqSerialNum() {
-        return reqSerialNum;
-    }
 
-    public IdempotentContext setReqSerialNum(String reqSerialNum) {
-        this.reqSerialNum = reqSerialNum;
-        return this;
-    }
 }

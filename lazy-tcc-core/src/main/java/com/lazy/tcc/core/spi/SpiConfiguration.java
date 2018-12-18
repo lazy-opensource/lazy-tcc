@@ -5,8 +5,8 @@ import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
-import com.lazy.tcc.core.repository.Repository;
-import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
+import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -25,10 +25,20 @@ public class SpiConfiguration {
 
     private Class<? extends Serialization> seriClassImpl;
     private Class<? extends Cache> cacheClassImpl;
-    private Class<? extends Repository> txRepository;
+    private Class<? extends AbstractTransactionRepository> txRepository;
+    private Class<? extends AbstractIdempotentRepository> idempotentRepository;
     private String loggerAdapter;
     private String txTableName;
     private String idempotentTableName;
+
+    public Class<? extends AbstractIdempotentRepository> getIdempotentRepository() {
+        return idempotentRepository;
+    }
+
+    public SpiConfiguration setIdempotentRepository(Class<? extends AbstractIdempotentRepository> idempotentRepository) {
+        this.idempotentRepository = idempotentRepository;
+        return this;
+    }
 
     public String getIdempotentTableName() {
         return idempotentTableName;
@@ -48,11 +58,11 @@ public class SpiConfiguration {
         return this;
     }
 
-    public Class<? extends Repository> getTxRepository() {
+    public Class<? extends AbstractTransactionRepository> getTxRepository() {
         return txRepository;
     }
 
-    public SpiConfiguration setTxRepository(Class<? extends Repository> txRepository) {
+    public SpiConfiguration setTxRepository(Class<? extends AbstractTransactionRepository> txRepository) {
         this.txRepository = txRepository;
         return this;
     }

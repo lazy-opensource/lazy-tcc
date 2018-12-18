@@ -4,7 +4,7 @@ import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
-import com.lazy.tcc.core.repository.support.AbstractCacheRepository;
+import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
 import java.io.ByteArrayInputStream;
@@ -23,7 +23,7 @@ import java.util.List;
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public class MysqlTransactionRepository extends AbstractCacheRepository<TransactionEntity, Long> {
+public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
     @Override
     public int doInsert(TransactionEntity transaction) {

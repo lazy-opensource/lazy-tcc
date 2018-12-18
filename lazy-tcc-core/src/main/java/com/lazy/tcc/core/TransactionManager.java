@@ -20,7 +20,7 @@ import java.util.List;
 
 /**
  * <p>
- * TransactionEntity Manager
+ * TransactionManager Definition
  * </p>
  *
  * @author laizhiyuan
@@ -29,8 +29,8 @@ import java.util.List;
 public final class TransactionManager {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
-    private final ThreadLocal<LinkedList<Long>> currentThreadTransactionIdHolder = new ThreadLocal<>();
-    private final MysqlTransactionRepository transactionRepository = TransactionRepositoryFactory.create();
+    private static final ThreadLocal<LinkedList<Long>> CURRENT_THREAD_TRANSACTION_ID_HOLDER = new ThreadLocal<>();
+    private static final MysqlTransactionRepository TRANSACTION_REPOSITORY = (MysqlTransactionRepository) TransactionRepositoryFactory.create();
 
     private static TransactionManager single;
 
@@ -51,8 +51,8 @@ public final class TransactionManager {
     public Transaction begin() {
 
         Transaction transaction = new Transaction().init();
-        transactionRepository.insert(TransactionMapper.INSTANCE.to(transaction));
-        currentThreadTransactionIdHolder.get().push(transaction.getTxId());
+        TRANSACTION_REPOSITORY.insert(TransactionMapper.INSTANCE.to(transaction));
+        CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().push(transaction.getTxId());
 
         return transaction;
     }
@@ -66,7 +66,7 @@ public final class TransactionManager {
         }
 
         transaction.setTxPhase(TransactionPhase.CONFIRM);
-        transactionRepository.update(TransactionMapper.INSTANCE.to(transaction));
+        TRANSACTION_REPOSITORY.update(TransactionMapper.INSTANCE.to(transaction));
 
         if (asyncCommit) {
 
@@ -120,7 +120,7 @@ public final class TransactionManager {
             participant.confirm(context);
         }
 
-        this.transactionRepository.delete(transaction.getTxId());
+        this.TRANSACTION_REPOSITORY.delete(transaction.getTxId());
     }
 
 
@@ -129,7 +129,7 @@ public final class TransactionManager {
         assert currentTransaction != null;
         currentTransaction.setParticipants(participantList);
 
-        this.transactionRepository.update(TransactionMapper.INSTANCE.to(currentTransaction));
+        TRANSACTION_REPOSITORY.update(TransactionMapper.INSTANCE.to(currentTransaction));
     }
 
     public void rollback(boolean asyncCancel) {
@@ -143,7 +143,7 @@ public final class TransactionManager {
         transaction.setTxPhase(TransactionPhase.CANCEL);
 
         //If this step is unsuccessful, the timer compensates for rollback
-        transactionRepository.update(TransactionMapper.INSTANCE.to(transaction));
+        TRANSACTION_REPOSITORY.update(TransactionMapper.INSTANCE.to(transaction));
 
         if (asyncCancel) {
 
@@ -191,11 +191,11 @@ public final class TransactionManager {
             participant.cancel(context);
         }
 
-        transactionRepository.delete(transaction.getTxId());
+        TRANSACTION_REPOSITORY.delete(transaction.getTxId());
     }
 
     public void participant(Transaction transaction) {
-        this.transactionRepository.update(TransactionMapper.INSTANCE.to(transaction));
+        TRANSACTION_REPOSITORY.update(TransactionMapper.INSTANCE.to(transaction));
     }
 
     public boolean hasDistributedActiveTransaction(WeavingPointInfo pointInfo) {
@@ -206,13 +206,13 @@ public final class TransactionManager {
     }
 
     public boolean hasLocalActiveTransaction() {
-        return currentThreadTransactionIdHolder.get() != null && !currentThreadTransactionIdHolder.get().isEmpty();
+        return CURRENT_THREAD_TRANSACTION_ID_HOLDER.get() != null && !CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().isEmpty();
     }
 
     public Transaction getCurrentTransaction() {
         if (hasLocalActiveTransaction()) {
-            Long txId = currentThreadTransactionIdHolder.get().peek();
-            TransactionEntity entity = this.transactionRepository.findById(txId);
+            Long txId = CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().peek();
+            TransactionEntity entity = TRANSACTION_REPOSITORY.findById(txId);
             return entity == null ? null : TransactionMapper.INSTANCE.from(entity);
         }
         return null;
@@ -222,10 +222,14 @@ public final class TransactionManager {
         if (hasLocalActiveTransaction()) {
             Transaction curTransaction = this.getCurrentTransaction();
             if (curTransaction == transaction) {
-                currentThreadTransactionIdHolder.get().pop();
+                CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().pop();
+
+                if (CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().isEmpty()) {
+                    CURRENT_THREAD_TRANSACTION_ID_HOLDER.remove();
+                }
 
                 if (transaction.getParticipants().isEmpty()) {
-                    this.transactionRepository.delete(transaction.getTxId());
+                    TRANSACTION_REPOSITORY.delete(transaction.getTxId());
                 }
             }
         }
@@ -250,7 +254,7 @@ public final class TransactionManager {
         if (context == null) {
             return null;
         }
-        TransactionEntity entity = this.transactionRepository.findById(context.getTxId());
+        TransactionEntity entity = TRANSACTION_REPOSITORY.findById(context.getTxId());
         return entity == null ? null : TransactionMapper.INSTANCE.from(entity);
     }
 

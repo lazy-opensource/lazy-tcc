@@ -144,9 +144,11 @@ public final class TransactionProcessor extends AbstractProcessor {
         } catch (Throwable transactionException) {
 
             logger.error("transaction exception, clean current transaction, Give job compensation transaction rollback", transactionException);
-            this.transactionManager.cleanCurrentTransaction(transaction);
 
             throw transactionException;
+        } finally {
+
+            this.transactionManager.cleanCurrentTransaction(transaction);
         }
 
         return invokeVal;

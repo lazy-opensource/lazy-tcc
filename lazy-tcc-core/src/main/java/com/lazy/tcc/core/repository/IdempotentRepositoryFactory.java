@@ -1,6 +1,6 @@
 package com.lazy.tcc.core.repository;
 
-import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
 /**
@@ -11,20 +11,20 @@ import com.lazy.tcc.core.spi.SpiConfiguration;
  * @author laizhiyuan
  * @since 2018/12/15.
  */
-public final class TransactionRepositoryFactory {
+public final class IdempotentRepositoryFactory {
 
 
-    private TransactionRepositoryFactory() {
+    private IdempotentRepositoryFactory() {
     }
 
-    private static volatile AbstractTransactionRepository repository;
+    private static volatile AbstractIdempotentRepository repository;
 
-    public static AbstractTransactionRepository create() {
+    public static AbstractIdempotentRepository create() {
         if (repository == null) {
-            synchronized (TransactionRepositoryFactory.class) {
+            synchronized (IdempotentRepositoryFactory.class) {
                 if (repository == null) {
                     try {
-                        repository = SpiConfiguration.getInstance().getTxRepository().newInstance();
+                        repository = SpiConfiguration.getInstance().getIdempotentRepository().newInstance();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
