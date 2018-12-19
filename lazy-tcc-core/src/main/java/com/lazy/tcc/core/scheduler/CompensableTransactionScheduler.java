@@ -27,7 +27,7 @@ public class CompensableTransactionScheduler {
     private static final Logger LOGGER = LoggerFactory.getLogger(CompensableTransactionScheduler.class);
 
 
-    public void CompensableTransactionScheduler() {
+    public CompensableTransactionScheduler init() {
 
         try {
 
@@ -68,6 +68,7 @@ public class CompensableTransactionScheduler {
             throw new RuntimeException("CompensableTransactionScheduler Exception: ", ex);
         }
 
+        return this;
     }
 
 }

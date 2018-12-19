@@ -58,22 +58,22 @@ public abstract class AbstractDataSourceRepository<E extends BasicEntity, ID ext
     }
 
     protected void closeStatement(Statement stmt) {
-        try {
-            if (stmt != null && !stmt.isClosed()) {
-                stmt.close();
-            }
-        } catch (Exception ex) {
-            throw new TransactionCrudException(ex);
-        }
+//        try {
+//            if (stmt != null && !stmt.isClosed()) {
+//                stmt.close();
+//            }
+//        } catch (Exception ex) {
+//            throw new TransactionCrudException(ex);
+//        }
     }
 
     protected void closeResultSet(ResultSet rst) {
-        try {
-            if (rst != null && !rst.isClosed()) {
-                rst.close();
-            }
-        } catch (Exception ex) {
-            throw new TransactionCrudException(ex);
-        }
+//        try {
+//            if (rst != null && !rst.isClosed()) {
+//                rst.close();
+//            }
+//        } catch (Exception ex) {
+//            throw new TransactionCrudException(ex);
+//        }
     }
 }

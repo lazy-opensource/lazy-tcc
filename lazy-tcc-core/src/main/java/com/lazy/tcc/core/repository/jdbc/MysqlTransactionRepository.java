@@ -37,8 +37,12 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             connection = this.getConnection();
 
             //checked tx table is exists
-            String tableIsExistsSql = String.format("SELECT count(*) as is_exists FROM information_schema.TABLES WHERE table_name ='%s'", SpiConfiguration.getInstance().getTxTableName());
+            String tableIsExistsSql =
+                    "select count(*) as is_exists from information_schema.TABLES t where t.TABLE_SCHEMA = ? and t.TABLE_NAME = ?";
             stmt = connection.prepareStatement(tableIsExistsSql);
+
+            stmt.setString(1, SpiConfiguration.getInstance().getTxDatabaseName());
+            stmt.setString(2, SpiConfiguration.getInstance().getTxTableName());
             resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
@@ -64,18 +68,12 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='lazy-tcc事务日志表'";
 
             stmt = connection.prepareStatement(sql);
-            boolean isSuccess = stmt.execute(sql);
+            stmt.execute(sql);
 
-            if (isSuccess) {
-                logger.info("create transaction table sql : " + sql);
-            }
-
-            return isSuccess ? 1 : 0;
+            return 1;
         } catch (Exception e) {
             throw new TransactionCrudException(e);
         } finally {
-            closeResultSet(resultSet);
-            closeStatement(stmt);
             this.releaseConnection(connection);
         }
     }
@@ -89,7 +87,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             connection = this.getConnection();
 
             String builder = "insert into " + SpiConfiguration.getInstance().getTxTableName() +
-                    " (tx_id,content_byte,retry_count,create_time,last_update_time,version) VALUES (?,?,?,?,?,?,?)";
+                    " (tx_id,content_byte,retry_count,create_time,last_update_time,version,tx_phase) VALUES (?,?,?,?,?,?,?)";
 
             stmt = connection.prepareStatement(builder);
 
@@ -102,7 +100,8 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             stmt.setInt(3, transaction.getRetryCount());
             stmt.setString(4, DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS));
             stmt.setString(5, DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS));
-            stmt.setLong(7, transaction.getVersion());
+            stmt.setLong(6, transaction.getVersion());
+            stmt.setInt(7, transaction.getTxPhase().getVal());
 
             return stmt.executeUpdate();
 
@@ -129,7 +128,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             connection = this.getConnection();
 
             stmt = connection.prepareStatement("update " + SpiConfiguration.getInstance().getTxTableName() +
-                    " set " + "content_type = ?,tx_phase = ?,last_update_time = ?, retry_count = ?," +
+                    " set " + "content_byte = ?,tx_phase = ?,last_update_time = ?, retry_count = ?," +
                     "version = version + 1 " + "where tx_id = ? and  version = ? and last_update_time = ?");
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
@@ -263,8 +262,6 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
             throw new TransactionCrudException(e);
         } finally {
-
-            closeResultSet(resultSet);
             closeStatement(stmt);
             this.releaseConnection(connection);
         }

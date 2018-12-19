@@ -4,6 +4,7 @@ import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.IdempotentRepositoryFactory;
 import com.lazy.tcc.core.repository.TransactionRepositoryFactory;
+import com.lazy.tcc.core.scheduler.CompensableTransactionScheduler;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
 
@@ -37,6 +38,9 @@ public class DefaultListener implements ApplicationListener<ContextRefreshedEven
             LOGGER.info("init transactionDataSource and idempotentDataSource");
             TransactionRepositoryFactory.create().setDataSource(transactionDataSource).createTable();
             IdempotentRepositoryFactory.create().setDataSource(idempotentDataSource).createTable();
+
+            new CompensableTransactionScheduler().init();
         }
     }
+
 }

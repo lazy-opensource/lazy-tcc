@@ -41,7 +41,7 @@ public class TransactionInterceptor {
     public Object around(ProceedingJoinPoint joinPoint, Compensable compensable) throws Throwable {
 
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug(String.format("weaving point method: [%s], args: [%s], compensable config info: [%s]"
+            LOGGER.debug(String.format("weaving point method: [%s], args: [%s], compensable datasource info: [%s]"
                     , joinPoint.getSignature(), JSON.toJSONString(joinPoint.getArgs()), JSON.toJSONString(compensable)));
         }
 

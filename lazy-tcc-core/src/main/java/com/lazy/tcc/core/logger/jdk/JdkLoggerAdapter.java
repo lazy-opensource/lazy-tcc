@@ -40,10 +40,10 @@ public class JdkLoggerAdapter implements LoggerAdapter {
             if (in != null) {
                 LogManager.getLogManager().readConfiguration(in);
             } else {
-                System.err.println("No such logging.properties in classpath for jdk logging config!");
+                System.err.println("No such logging.properties in classpath for jdk logging datasource!");
             }
         } catch (Throwable t) {
-            System.err.println("Failed to load logging.properties in classpath for jdk logging config, cause: " + t.getMessage());
+            System.err.println("Failed to load logging.properties in classpath for jdk logging datasource, cause: " + t.getMessage());
         }
         try {
             Handler[] handlers = java.util.logging.Logger.getLogger(GLOBAL_LOGGER_NAME).getHandlers();

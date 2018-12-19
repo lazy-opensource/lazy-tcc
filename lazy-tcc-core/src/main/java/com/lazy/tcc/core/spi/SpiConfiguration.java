@@ -4,9 +4,7 @@ import com.lazy.tcc.common.utils.ReflectUtils;
 import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.cache.guava.GoogleGuavaCache;
-import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerAdapter;
-import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.jdbc.MysqlIdempotentRepository;
 import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
@@ -36,7 +34,9 @@ public class SpiConfiguration {
     private Class<? extends AbstractIdempotentRepository> idempotentRepository = MysqlIdempotentRepository.class;
     private Class<? extends LoggerAdapter> loggerAdapter;
     private String txTableName = "lazy_tcc_transaction";
+    private String txDatabaseName;
     private String idempotentTableName = "lazy_tcc_idempotent";
+    private String applicationDatabaseName;
     private String idempotentAppKey = defaultAppKey();
     private int retryCount = 5;
     private int keepRequestLogDayCount = 31;
@@ -46,6 +46,24 @@ public class SpiConfiguration {
     private String datasourceUrl;
     private String datasourceUsername;
     private String datasourcePassword;
+
+    public String getTxDatabaseName() {
+        return txDatabaseName;
+    }
+
+    public SpiConfiguration setTxDatabaseName(String txDatabaseName) {
+        this.txDatabaseName = txDatabaseName;
+        return this;
+    }
+
+    public String getApplicationDatabaseName() {
+        return applicationDatabaseName;
+    }
+
+    public SpiConfiguration setApplicationDatabaseName(String applicationDatabaseName) {
+        this.applicationDatabaseName = applicationDatabaseName;
+        return this;
+    }
 
     public String getDatasourceDriver() {
         return datasourceDriver;

@@ -52,9 +52,16 @@ public final class TransactionManager {
 
         Transaction transaction = new Transaction().init();
         TRANSACTION_REPOSITORY.insert(TransactionMapper.INSTANCE.to(transaction));
-        CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().push(transaction.getTxId());
+        push(transaction.getTxId());
 
         return transaction;
+    }
+
+    private void push(Long txId) {
+        if (CURRENT_THREAD_TRANSACTION_ID_HOLDER.get() == null) {
+            CURRENT_THREAD_TRANSACTION_ID_HOLDER.set(new LinkedList<>());
+        }
+        CURRENT_THREAD_TRANSACTION_ID_HOLDER.get().push(txId);
     }
 
     public void commit(boolean asyncCommit) {

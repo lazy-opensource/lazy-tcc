@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.annotation.Rollback;
@@ -25,7 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest
 @Rollback(false)
 @EnableAspectJAutoProxy
-@SpringBootApplication
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class},
         isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED)
 public class BaseTests {

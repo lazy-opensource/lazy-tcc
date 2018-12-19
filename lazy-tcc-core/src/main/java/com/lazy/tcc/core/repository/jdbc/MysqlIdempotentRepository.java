@@ -1,5 +1,6 @@
 package com.lazy.tcc.core.repository.jdbc;
 
+import com.alibaba.fastjson.JSON;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.IdempotentEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
@@ -11,7 +12,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 
 /**
- * <p>
  * <p>
  * </p>
  *
@@ -31,8 +31,12 @@ public class MysqlIdempotentRepository extends AbstractIdempotentRepository {
             connection = this.getConnection();
 
             //checked idempotent table is exists
-            String tableIsExistsSql = String.format("SELECT count(*) as is_exists FROM information_schema.TABLES WHERE table_name ='%s'", SpiConfiguration.getInstance().getIdempotentTableName());
+            String tableIsExistsSql =
+                    "select count(*) as is_exists from information_schema.TABLES t where t.TABLE_SCHEMA = ? and t.TABLE_NAME = ?";
             stmt = connection.prepareStatement(tableIsExistsSql);
+
+            stmt.setString(1, SpiConfiguration.getInstance().getApplicationDatabaseName());
+            stmt.setString(2, SpiConfiguration.getInstance().getIdempotentTableName());
             resultSet = stmt.executeQuery();
 
             if (resultSet.next()) {
@@ -55,18 +59,12 @@ public class MysqlIdempotentRepository extends AbstractIdempotentRepository {
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
             stmt = connection.prepareStatement(sql);
-            boolean isSuccess = stmt.execute(sql);
+            stmt.execute(sql);
 
-            if (isSuccess) {
-                logger.info("create idempotent table sql : " + sql);
-            }
-
-            return isSuccess ? 1 : 0;
+            return 1;
         } catch (Exception e) {
             throw new TransactionCrudException(e);
         } finally {
-            closeResultSet(resultSet);
-            closeStatement(stmt);
             this.releaseConnection(connection);
         }
     }

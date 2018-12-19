@@ -4,11 +4,11 @@ import com.lazy.tcc.core.BeanFactory;
 import com.lazy.tcc.core.interceptor.IdempotentInterceptor;
 import com.lazy.tcc.core.interceptor.TransactionInterceptor;
 import com.lazy.tcc.core.listener.DefaultListener;
-import com.lazy.tcc.core.scheduler.CompensableTransactionScheduler;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,7 +24,9 @@ import java.beans.PropertyVetoException;
  * @since 2018/12/16.
  */
 @Configuration
-public class LazyTccAutoConfiguration {
+public class LazyTccAutoConfiguration implements ApplicationContextAware {
+
+    private ApplicationContext applicationContext;
 
     @Bean
     public BeanFactory lazyTccBeanFactory() {
@@ -42,17 +44,12 @@ public class LazyTccAutoConfiguration {
     }
 
     @Bean
-    public CompensableTransactionScheduler lazyTccCompensableTransactionScheduler() {
-        return new CompensableTransactionScheduler();
+    public DefaultListener defaultListener() {
+        DataSource applicationDataSource = applicationContext.getBean(DataSource.class);
+        return new DefaultListener(createDataSource(), applicationDataSource);
     }
 
-    @Bean
-    public DefaultListener defaultListener(@Autowired @Qualifier("dataSource") DataSource dataSource) {
-        return new DefaultListener(createDataSource(), dataSource);
-    }
-
-    @Bean
-    public DataSource createDataSource() {
+    private DataSource createDataSource() {
         ComboPooledDataSource dataSource = new ComboPooledDataSource();
 
         try {
@@ -69,4 +66,8 @@ public class LazyTccAutoConfiguration {
         return dataSource;
     }
 
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
 }
