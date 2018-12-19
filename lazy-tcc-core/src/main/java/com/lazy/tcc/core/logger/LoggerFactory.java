@@ -2,6 +2,7 @@ package com.lazy.tcc.core.logger;
 
 
 import com.lazy.tcc.common.utils.StringUtils;
+import com.lazy.tcc.core.spi.PropertiesReader;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 import com.lazy.tcc.core.logger.jcl.JclLoggerAdapter;
 import com.lazy.tcc.core.logger.jdk.JdkLoggerAdapter;
@@ -25,8 +26,8 @@ public class LoggerFactory {
     private static volatile LoggerAdapter LOGGER_ADAPTER;
 
     static {
-        String logger = SpiConfiguration.getInstance().getLoggerAdapter();
-        if (StringUtils.isBlank(logger)) {
+        Class<? extends LoggerAdapter> logger = SpiConfiguration.getInstance().getLoggerAdapter();
+        if (logger == null) {
             try {
                 setLoggerAdapter(new Slf4jLoggerAdapter());
             } catch (Throwable e1) {
@@ -41,9 +42,8 @@ public class LoggerFactory {
                 }
             }
         } else {
-            logger = StringUtils.toUpperCaseFirstOne(logger.toLowerCase()) + "LoggerAdapter";
             try {
-                setLoggerAdapter((LoggerAdapter) Class.forName(logger).newInstance());
+                setLoggerAdapter((LoggerAdapter) logger.newInstance());
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

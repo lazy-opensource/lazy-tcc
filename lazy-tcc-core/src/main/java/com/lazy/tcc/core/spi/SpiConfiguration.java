@@ -5,6 +5,7 @@ import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.cache.guava.GoogleGuavaCache;
 import com.lazy.tcc.core.logger.Logger;
+import com.lazy.tcc.core.logger.LoggerAdapter;
 import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.jdbc.MysqlIdempotentRepository;
 import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
@@ -33,13 +34,54 @@ public class SpiConfiguration {
     private Class<? extends Cache> cacheClassImpl = GoogleGuavaCache.class;
     private Class<? extends AbstractTransactionRepository> txRepository = MysqlTransactionRepository.class;
     private Class<? extends AbstractIdempotentRepository> idempotentRepository = MysqlIdempotentRepository.class;
-    private String loggerAdapter = "slf4j";
+    private Class<? extends LoggerAdapter> loggerAdapter;
     private String txTableName = "lazy_tcc_transaction";
     private String idempotentTableName = "lazy_tcc_idempotent";
     private String idempotentAppKey = defaultAppKey();
     private int retryCount = 5;
     private int keepRequestLogDayCount = 31;
     private int compensationMinuteInterval = 10;
+
+    private String datasourceDriver;
+    private String datasourceUrl;
+    private String datasourceUsername;
+    private String datasourcePassword;
+
+    public String getDatasourceDriver() {
+        return datasourceDriver;
+    }
+
+    public SpiConfiguration setDatasourceDriver(String datasourceDriver) {
+        this.datasourceDriver = datasourceDriver;
+        return this;
+    }
+
+    public String getDatasourceUrl() {
+        return datasourceUrl;
+    }
+
+    public SpiConfiguration setDatasourceUrl(String datasourceUrl) {
+        this.datasourceUrl = datasourceUrl;
+        return this;
+    }
+
+    public String getDatasourceUsername() {
+        return datasourceUsername;
+    }
+
+    public SpiConfiguration setDatasourceUsername(String datasourceUsername) {
+        this.datasourceUsername = datasourceUsername;
+        return this;
+    }
+
+    public String getDatasourcePassword() {
+        return datasourcePassword;
+    }
+
+    public SpiConfiguration setDatasourcePassword(String datasourcePassword) {
+        this.datasourcePassword = datasourcePassword;
+        return this;
+    }
 
     private static String defaultAppKey() {
         InetAddress addr;
@@ -144,19 +186,14 @@ public class SpiConfiguration {
         return this;
     }
 
-    public String getLoggerAdapter() {
+    public Class<? extends LoggerAdapter> getLoggerAdapter() {
         return loggerAdapter;
     }
 
-    public SpiConfiguration setLoggerAdapter(String loggerAdapter) {
+    public SpiConfiguration setLoggerAdapter(Class<? extends LoggerAdapter> loggerAdapter) {
         this.loggerAdapter = loggerAdapter;
         return this;
     }
-
-    /**
-     * Logger
-     */
-    private static Logger LOGGER = LoggerFactory.getLogger(SpiConfiguration.class);
 
     /**
      * 单例对象
@@ -178,7 +215,6 @@ public class SpiConfiguration {
         if (singleton == null) {
             synchronized (SpiConfiguration.class) {
                 if (singleton == null) {
-                    LOGGER.info("init spi config");
                     singleton = new SpiConfiguration();
                     Class clazz = singleton.getClass();
                     Class type;
@@ -208,10 +244,10 @@ public class SpiConfiguration {
                             } else {
                                 ReflectUtils.setFieldValue(field.getName(), configVal, singleton);
                             }
-                            LOGGER.debug(String.format("%s:%s", configName, configVal));
+
                         }
                     } catch (Exception ex) {
-                        LOGGER.error("init PropertiesConfiguration ERROR", ex);
+
                         throw new RuntimeException("init PropertiesConfiguration ERROR", ex);
                     }
                 }

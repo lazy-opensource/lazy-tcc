@@ -1,6 +1,11 @@
 package com.lazy.tcc.example.dubbo.shared.services.stock.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.lazy.tcc.common.enums.ApplicationRole;
+import com.lazy.tcc.core.annotation.Compensable;
+import com.lazy.tcc.core.annotation.Idempotent;
+import com.lazy.tcc.core.propagator.dubbo.DubboIdempotentContextPropagator;
+import com.lazy.tcc.core.propagator.dubbo.DubboTransactionContextPropagator;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.IStockService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseBuilder;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseDto;
@@ -37,6 +42,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
+    @Compensable(confirmMethod = "confirmDeductStock", cancelMethod = "cancelDeductStock", propagator = DubboTransactionContextPropagator.class)
     public SimpleResponseDto<String> deductStock(StockEditorDto dto) {
         repository.deductStock(dto.getProductSku(), dto.getStockNum());
 
@@ -50,6 +56,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
+    @Idempotent(applicationRole = ApplicationRole.PROVIDER, propagator = DubboIdempotentContextPropagator.class)
     public SimpleResponseDto<String> confirmDeductStock(StockEditorDto dto) {
         repository.confirmDeductStock(dto.getProductSku(), dto.getStockNum());
 
@@ -63,6 +70,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
+    @Idempotent(applicationRole = ApplicationRole.PROVIDER, propagator = DubboIdempotentContextPropagator.class)
     public SimpleResponseDto<String> cancelDeductStock(StockEditorDto dto) {
         repository.cancelDeductStock(dto.getProductSku(), dto.getStockNum());
 

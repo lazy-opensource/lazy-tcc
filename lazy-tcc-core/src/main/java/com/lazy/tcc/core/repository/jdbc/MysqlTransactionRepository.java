@@ -27,6 +27,60 @@ import java.util.List;
 public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
     @Override
+    public int createTable() {
+
+        Connection connection = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        try {
+            connection = this.getConnection();
+
+            //checked tx table is exists
+            String tableIsExistsSql = String.format("SELECT count(*) as is_exists FROM information_schema.TABLES WHERE table_name ='%s'", SpiConfiguration.getInstance().getTxTableName());
+            stmt = connection.prepareStatement(tableIsExistsSql);
+            resultSet = stmt.executeQuery();
+
+            if (resultSet.next()) {
+                int isExists = resultSet.getInt("is_exists");
+                if (isExists > 0) {
+                    logger.info(String.format("transaction table %s exists", SpiConfiguration.getInstance().getIdempotentTableName()));
+
+                    return 1;
+                }
+            }
+
+            logger.info(String.format("transaction table %s not exists, now create it", SpiConfiguration.getInstance().getTxTableName()));
+
+            String sql = "CREATE TABLE `" + SpiConfiguration.getInstance().getTxTableName() + "` (" +
+                    "  `tx_id` bigint(20) NOT NULL COMMENT '主键'," +
+                    "  `tx_phase` int(5) NOT NULL COMMENT '事务阶段 try,confirm,cancel'," +
+                    "  `retry_count` int(5) NOT NULL COMMENT '重试次数'," +
+                    "  `content_byte` varbinary(8000) NOT NULL COMMENT '参与者字节码'," +
+                    "  `version` bigint(20) NOT NULL COMMENT '乐观锁版本号'," +
+                    "  `create_time` datetime NOT NULL COMMENT '创建时间'," +
+                    "  `last_update_time` datetime NOT NULL COMMENT '最后更新时间'," +
+                    "  PRIMARY KEY (`tx_id`)" +
+                    ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='lazy-tcc事务日志表'";
+
+            stmt = connection.prepareStatement(sql);
+            boolean isSuccess = stmt.execute(sql);
+
+            if (isSuccess) {
+                logger.info("create transaction table sql : " + sql);
+            }
+
+            return isSuccess ? 1 : 0;
+        } catch (Exception e) {
+            throw new TransactionCrudException(e);
+        } finally {
+            closeResultSet(resultSet);
+            closeStatement(stmt);
+            this.releaseConnection(connection);
+        }
+    }
+
+    @Override
     public int doInsert(TransactionEntity transaction) {
         Connection connection = null;
         PreparedStatement stmt = null;
@@ -160,11 +214,6 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
         }
 
         return transaction;
-    }
-
-    @Override
-    public int createTable() {
-        return 0;
     }
 
     @Override

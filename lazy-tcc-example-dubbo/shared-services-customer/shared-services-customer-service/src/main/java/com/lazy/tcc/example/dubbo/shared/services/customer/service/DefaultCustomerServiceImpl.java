@@ -1,6 +1,11 @@
 package com.lazy.tcc.example.dubbo.shared.services.customer.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.lazy.tcc.common.enums.ApplicationRole;
+import com.lazy.tcc.core.annotation.Compensable;
+import com.lazy.tcc.core.annotation.Idempotent;
+import com.lazy.tcc.core.propagator.dubbo.DubboIdempotentContextPropagator;
+import com.lazy.tcc.core.propagator.dubbo.DubboTransactionContextPropagator;
 import com.lazy.tcc.example.dubbo.shared.services.customer.ICustomerService;
 import com.lazy.tcc.example.dubbo.shared.services.customer.repository.ICustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,7 @@ public class DefaultCustomerServiceImpl implements ICustomerService {
      * @param capital    capital {@link BigDecimal}
      */
     @Override
+    @Compensable(propagator = DubboTransactionContextPropagator.class, confirmMethod = "confirmDeductCapital", cancelMethod = "cancelDeductCapital")
     public void deductCapital(String customerNo, BigDecimal capital) {
         repository.deductCapital(customerNo, capital);
     }
@@ -48,6 +54,7 @@ public class DefaultCustomerServiceImpl implements ICustomerService {
      * @param capital    capital {@link BigDecimal}
      */
     @Override
+    @Idempotent(propagator = DubboIdempotentContextPropagator.class, applicationRole = ApplicationRole.PROVIDER)
     public void confirmDeductCapital(String customerNo, BigDecimal capital) {
         repository.confirmDeductCapital(customerNo, capital);
     }
@@ -59,6 +66,7 @@ public class DefaultCustomerServiceImpl implements ICustomerService {
      * @param capital    capital {@link BigDecimal}
      */
     @Override
+    @Idempotent(propagator = DubboIdempotentContextPropagator.class, applicationRole = ApplicationRole.PROVIDER)
     public void cancelDeductCapital(String customerNo, BigDecimal capital) {
         repository.cancelDeductCapital(customerNo, capital);
     }

@@ -19,11 +19,6 @@
         </dependency>
         <dependency>
             <groupId>com.lazy.tcc</groupId>
-            <artifactId>shared-services-order-api</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.lazy.tcc</groupId>
             <artifactId>shared-services-stock-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
