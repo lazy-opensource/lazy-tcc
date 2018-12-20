@@ -10,6 +10,8 @@ import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
+import com.lazy.tcc.core.serializer.fst.FstSerialization;
+import com.lazy.tcc.core.serializer.jdk.JdkSerialization;
 import com.lazy.tcc.core.serializer.kryo.KryoSerialization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -28,7 +30,7 @@ import java.net.UnknownHostException;
 @ConfigurationProperties("lazy.tcc.config")
 public class SpiConfiguration {
 
-    private Class<? extends Serialization> seriClassImpl = KryoSerialization.class;
+    private Class<? extends Serialization> seriClassImpl = JdkSerialization.class;
     private Class<? extends Cache> cacheClassImpl = GoogleGuavaCache.class;
     private Class<? extends AbstractTransactionRepository> txRepository = MysqlTransactionRepository.class;
     private Class<? extends AbstractIdempotentRepository> idempotentRepository = MysqlIdempotentRepository.class;

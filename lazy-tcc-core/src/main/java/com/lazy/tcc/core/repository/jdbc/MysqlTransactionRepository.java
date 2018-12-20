@@ -94,7 +94,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             stmt.setLong(1, transaction.getTxId());
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
-            serialization.serialize(bos).writeObject(transaction.getParticipants());
+            serialization.serialize(bos).writeObject(transaction);
             stmt.setBytes(2, bos.toByteArray());
 
             stmt.setInt(3, transaction.getRetryCount());
@@ -132,7 +132,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
                     "version = version + 1 " + "where tx_id = ? and  version = ? and last_update_time = ?");
 
             ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
-            serialization.serialize(bos).writeObject(transaction.getParticipants());
+            serialization.serialize(bos).writeObject(transaction);
 
             stmt.setBytes(1, bos.toByteArray());
             stmt.setInt(2, transaction.getTxPhase().getVal());
@@ -222,6 +222,8 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
     @SuppressWarnings("unchecked")
     private TransactionEntity getRow(ResultSet resultSet) throws Exception {
+        byte[] bytes = resultSet.getBytes("content_byte");
+        System.out.println(bytes.toString());
         return new TransactionEntity()
                 .setLastUpdateTime(resultSet.getString("last_update_time"))
                 .setCreateTime(resultSet.getString("create_time"))

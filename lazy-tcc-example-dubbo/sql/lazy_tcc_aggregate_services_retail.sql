@@ -28,3 +28,12 @@ CREATE TABLE `t_order_item` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `uniq_1` (`product_sku`) USING BTREE COMMENT '唯一索引-1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+CREATE TABLE `t_order` (
+  `id` bigint(20) NOT NULL COMMENT '主键',
+  `customer_no` varchar(32) NOT NULL COMMENT '客户编号',
+  `total_amount` decimal(13,2) NOT NULL COMMENT '订单总金额',
+  `order_no` varchar(32) NOT NULL COMMENT '订单编号',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+

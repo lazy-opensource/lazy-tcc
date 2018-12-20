@@ -65,7 +65,7 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
 
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     @Compensable(propagator = DubboTransactionContextPropagator.class)
     public void submitOrder() {
         //order

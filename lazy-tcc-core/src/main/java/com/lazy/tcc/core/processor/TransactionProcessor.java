@@ -92,7 +92,6 @@ public final class TransactionProcessor extends AbstractProcessor {
 
         //propagator transaction
         TransactionContext context = this.transactionManager.getDistributedTransactionContext(pointInfo);
-        //todo: Consumers and providers will repeat calls before execution, and consider optimization in the future
         TransactionContextPropagatorSingleFactory.create(pointInfo.getCompensable().propagator()).setContext(context);
 
         boolean isNewTransaction = this.isNewTransaction(pointInfo);
@@ -126,6 +125,11 @@ public final class TransactionProcessor extends AbstractProcessor {
 
             try {
 
+                //begin new transaction after, setter transaction context to propagator
+                TransactionContextPropagatorSingleFactory.create(pointInfo.getCompensable().propagator()).setContext(
+                        new TransactionContext().setTxId(transaction.getTxId())
+                                .setTxPhase(transaction.getTxPhase())
+                );
                 //execute program
                 invokeVal = pointInfo.getJoinPoint().proceed();
 
