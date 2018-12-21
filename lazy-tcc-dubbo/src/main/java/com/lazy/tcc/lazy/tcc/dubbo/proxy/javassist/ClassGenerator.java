@@ -66,6 +66,8 @@ public final class ClassGenerator {
 
     private Set<String> compensableMethods = new HashSet<String>();
 
+    private Set<String> idempotentMethods = new HashSet<String>();
+
     private Map<String, Method> mCopyMethods; // <method desc,method instance>
 
     private Map<String, Constructor<?>> mCopyConstructors; // <constructor desc,constructor instance>
@@ -140,10 +142,10 @@ public final class ClassGenerator {
     }
 
     public ClassGenerator addMethod(String name, int mod, Class<?> rt, Class<?>[] pts, String body) {
-        return addMethod(false, name, mod, rt, pts, null, body);
+        return addMethod(false, false, name, mod, rt, pts, null, body);
     }
 
-    public ClassGenerator addMethod(boolean isCompensableMethod, String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets, String body) {
+    public ClassGenerator addMethod(boolean isCompensableMethod, boolean isIdempotentMethod,  String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets, String body) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(modifier(mod)).append(' ').append(ReflectUtils.getName(rt)).append(' ').append(name);
@@ -167,6 +169,10 @@ public final class ClassGenerator {
 
         if (isCompensableMethod) {
             compensableMethods.add(sb.toString());
+        }
+
+        if (isIdempotentMethod) {
+            idempotentMethods.add(sb.toString());
         }
 
         return addMethod(sb.toString());
@@ -267,16 +273,33 @@ public final class ClassGenerator {
 
                             ConstPool constpool = mCtc.getClassFile().getConstPool();
                             AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
-                            Annotation annot = new Annotation("org.mengyun.tcctransaction.api.Compensable", constpool);
+                            Annotation annot = new Annotation("com.lazy.tcc.core.annotation.Compensable", constpool);
                             EnumMemberValue enumMemberValue = new EnumMemberValue(constpool);
-                            enumMemberValue.setType("org.mengyun.tcctransaction.api.Propagation");
-                            enumMemberValue.setValue("SUPPORTS");
+                            enumMemberValue.setType("com.lazy.tcc.common.enums.Propagation");
+                            enumMemberValue.setValue("REQUIRED");
                             annot.addMemberValue("propagation", enumMemberValue);
                             annot.addMemberValue("confirmMethod", new StringMemberValue(ctMethod.getName(), constpool));
                             annot.addMemberValue("cancelMethod", new StringMemberValue(ctMethod.getName(), constpool));
 
-                            ClassMemberValue classMemberValue = new ClassMemberValue("org.mengyun.tcctransaction.dubbo.context.DubboTransactionContextEditor", constpool);
-                            annot.addMemberValue("transactionContextEditor", classMemberValue);
+                            ClassMemberValue classMemberValue = new ClassMemberValue("com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator", constpool);
+                            annot.addMemberValue("propagator", classMemberValue);
+
+                            attr.addAnnotation(annot);
+                            ctMethod.getMethodInfo().addAttribute(attr);
+                        }
+
+                        if (idempotentMethods.contains(code)) {
+
+                            ConstPool constpool = mCtc.getClassFile().getConstPool();
+                            AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
+                            Annotation annot = new Annotation("com.lazy.tcc.core.annotation.Idempotemt", constpool);
+                            EnumMemberValue enumMemberValue = new EnumMemberValue(constpool);
+                            enumMemberValue.setType("com.lazy.tcc.common.enums.ApplicationRole");
+                            enumMemberValue.setValue("CONSUMER");
+                            annot.addMemberValue("applicationRole", enumMemberValue);
+
+                            ClassMemberValue classMemberValue = new ClassMemberValue("com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator", constpool);
+                            annot.addMemberValue("propagator", classMemberValue);
 
                             attr.addAnnotation(annot);
                             ctMethod.getMethodInfo().addAttribute(attr);

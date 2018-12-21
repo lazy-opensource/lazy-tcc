@@ -1,8 +1,7 @@
 package com.lazy.tcc.example.dubbo.aggregate.services.retail.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.lazy.tcc.core.annotation.Compensable;
-import com.lazy.tcc.core.propagator.dubbo.DubboTransactionContextPropagator;
+import com.lazy.tcc.core.annotation.Compensable;;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.entity.TOrderEntity;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.entity.TOrderItemEntity;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.service.IOrderItemService;
@@ -11,6 +10,7 @@ import com.lazy.tcc.example.dubbo.aggregate.services.retail.service.IShopCartSer
 import com.lazy.tcc.example.dubbo.shared.services.customer.ICustomerService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.IStockService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.StockEditorDto;
+import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

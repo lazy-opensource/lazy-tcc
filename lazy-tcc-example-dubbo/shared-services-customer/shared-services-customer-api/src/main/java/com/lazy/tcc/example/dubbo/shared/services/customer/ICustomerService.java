@@ -3,8 +3,8 @@ package com.lazy.tcc.example.dubbo.shared.services.customer;
 import com.lazy.tcc.common.enums.ApplicationRole;
 import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.core.annotation.Idempotent;
-import com.lazy.tcc.core.propagator.dubbo.DubboIdempotentContextPropagator;
-import com.lazy.tcc.core.propagator.dubbo.DubboTransactionContextPropagator;
+import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
+import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 
 import java.math.BigDecimal;
 

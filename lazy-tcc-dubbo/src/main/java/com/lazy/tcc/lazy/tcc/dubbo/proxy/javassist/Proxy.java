@@ -174,11 +174,11 @@ public abstract class Proxy {
                     Compensable compensable = method.getAnnotation(Compensable.class);
                     Idempotent idempotent = method.getAnnotation(Idempotent.class);
                     if (compensable != null) {
-                        ccp.addMethod(true, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+                        ccp.addMethod(true, false, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
                     } else if (idempotent != null){
-                        ccp.addMethod(true, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+                        ccp.addMethod(false, true, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
                     }else {
-                        ccp.addMethod(false, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+                        ccp.addMethod(false, false, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
                     }
                 }
             }

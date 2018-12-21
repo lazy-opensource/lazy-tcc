@@ -4,10 +4,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.lazy.tcc.common.enums.ApplicationRole;
 import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.core.annotation.Idempotent;
-import com.lazy.tcc.core.propagator.dubbo.DubboIdempotentContextPropagator;
-import com.lazy.tcc.core.propagator.dubbo.DubboTransactionContextPropagator;
 import com.lazy.tcc.example.dubbo.shared.services.customer.ICustomerService;
 import com.lazy.tcc.example.dubbo.shared.services.customer.repository.ICustomerRepository;
+import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
+import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 

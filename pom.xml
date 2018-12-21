@@ -5,6 +5,7 @@
     <modules>
         <module>lazy-tcc-common</module>
         <module>lazy-tcc-core</module>
+        <module>lazy-tcc-dubbo</module>
         <module>lazy-tcc-example-dubbo</module>
     </modules>
     <parent>
