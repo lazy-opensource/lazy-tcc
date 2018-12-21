@@ -27,10 +27,6 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>dubbo</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.lazy.tcc</groupId>
             <artifactId>lazy-tcc-common</artifactId>
         </dependency>

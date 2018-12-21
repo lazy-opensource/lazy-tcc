@@ -1,4 +1,4 @@
-package com.lazy.tcc.core.propagator.dubbo;
+package com.lazy.tcc.lazy.tcc.dubbo.propagator;
 
 import com.alibaba.dubbo.rpc.RpcContext;
 import com.alibaba.fastjson.JSON;
@@ -19,14 +19,14 @@ public class DubboTransactionContextPropagator extends AbstractTransactionContex
     public void setContext(TransactionContext context) {
 
         if (context != null) {
-            RpcContext.getContext().setAttachment(TX_PROPAGATOR_KEY, JSON.toJSONString(context));
+            RpcContext.getContext().setAttachment(AbstractTransactionContextPropagator.TX_PROPAGATOR_KEY, JSON.toJSONString(context));
         }
     }
 
     @Override
     public TransactionContext getContext() {
 
-        String context = RpcContext.getContext().getAttachment(TX_PROPAGATOR_KEY);
+        String context = RpcContext.getContext().getAttachment(AbstractTransactionContextPropagator.TX_PROPAGATOR_KEY);
         if (context == null) {
             return null;
         }

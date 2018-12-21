@@ -37,6 +37,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.lazy.tcc</groupId>
+                <artifactId>lazy-tcc-core</artifactId>
+                <version>${last.update.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.quartz-scheduler</groupId>
                 <artifactId>quartz</artifactId>
                 <version>2.2.2</version>

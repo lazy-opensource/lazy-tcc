@@ -42,7 +42,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
-//    @Compensable(confirmMethod = "confirmDeductStock", cancelMethod = "cancelDeductStock", propagator = DubboTransactionContextPropagator.class)
+    @Compensable(confirmMethod = "confirmDeductStock", cancelMethod = "cancelDeductStock", propagator = DubboTransactionContextPropagator.class)
     public SimpleResponseDto<String> deductStock(StockEditorDto dto) {
         repository.deductStock(dto.getProductSku(), dto.getStockNum());
 

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.spring.context.annotation.EnableDubbo;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
@@ -18,7 +19,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(value = {
         "com.lazy.tcc.example.dubbo.aggregate.services.retail.entity"
 })
-@EnableAspectJAutoProxy
+@ComponentScan({"com.lazy.tcc.example.dubbo.*"})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @SpringBootApplication
 public class AggregateServicesRetailApplication {
 

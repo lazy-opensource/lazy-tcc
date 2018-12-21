@@ -1,5 +1,6 @@
 package com.lazy.tcc.example.dubbo.aggregate.services.retail.service;
 
+import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.entity.TOrderEntity;
 
 /**
@@ -12,6 +13,7 @@ import com.lazy.tcc.example.dubbo.aggregate.services.retail.entity.TOrderEntity;
  */
 public interface IOrderService {
 
+    @Compensable
     void save(TOrderEntity entity);
 
 }

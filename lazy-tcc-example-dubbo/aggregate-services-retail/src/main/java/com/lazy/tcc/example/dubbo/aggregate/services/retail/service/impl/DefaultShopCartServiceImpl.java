@@ -89,6 +89,11 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
         orderEntity.getItemEntityList().add(orderItemEntity1);
         orderEntity.getItemEntityList().add(orderItemEntity2);
 
+        //saved order
+        iOrderService.save(orderEntity);
+        iOrderItemService.save(orderItemEntity1);
+        iOrderItemService.save(orderItemEntity2);
+
 
         //deduct customer capital
         iCustomerService.deductCapital(orderEntity.getCustomerNo(), orderEntity.getTotalAmount());
@@ -104,11 +109,6 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
         iStockService.deductStock(new StockEditorDto()
                 .setProductSku(orderItemEntity2.getProductSku())
                 .setStockNum(orderItemEntity2.getProductNum()));
-
-        //saved order
-        iOrderItemService.save(orderItemEntity1);
-        iOrderItemService.save(orderItemEntity2);
-        iOrderService.save(orderEntity);
 
     }
 }

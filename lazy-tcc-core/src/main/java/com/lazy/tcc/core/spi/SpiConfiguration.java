@@ -1,6 +1,6 @@
 package com.lazy.tcc.core.spi;
 
-import com.lazy.tcc.common.utils.ReflectUtils;
+import com.lazy.tcc.common.utils.ReflectionUtils;
 import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.cache.guava.GoogleGuavaCache;
@@ -10,9 +10,7 @@ import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
 import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
-import com.lazy.tcc.core.serializer.fst.FstSerialization;
 import com.lazy.tcc.core.serializer.jdk.JdkSerialization;
-import com.lazy.tcc.core.serializer.kryo.KryoSerialization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 import java.lang.reflect.Field;
@@ -254,15 +252,15 @@ public class SpiConfiguration {
                                 continue;
                             }
                             if (type.equals(Class.class)) {
-                                ReflectUtils.setFieldValue(field.getName(), Class.forName(configVal), singleton);
+                                ReflectionUtils.setFieldValue(field.getName(), Class.forName(configVal), singleton);
                             } else if (type.equals(Integer.class) || type.equals(int.class)) {
-                                ReflectUtils.setFieldValue(field.getName(), Integer.valueOf(configVal), singleton);
+                                ReflectionUtils.setFieldValue(field.getName(), Integer.valueOf(configVal), singleton);
                             } else if (type.equals(Long.class) || type.equals(long.class)) {
-                                ReflectUtils.setFieldValue(field.getName(), Long.valueOf(configVal), singleton);
+                                ReflectionUtils.setFieldValue(field.getName(), Long.valueOf(configVal), singleton);
                             } else if (type.equals(Boolean.class) || type.equals(boolean.class)) {
-                                ReflectUtils.setFieldValue(field.getName(), Boolean.valueOf(configVal), singleton);
+                                ReflectionUtils.setFieldValue(field.getName(), Boolean.valueOf(configVal), singleton);
                             } else {
-                                ReflectUtils.setFieldValue(field.getName(), configVal, singleton);
+                                ReflectionUtils.setFieldValue(field.getName(), configVal, singleton);
                             }
 
                         }

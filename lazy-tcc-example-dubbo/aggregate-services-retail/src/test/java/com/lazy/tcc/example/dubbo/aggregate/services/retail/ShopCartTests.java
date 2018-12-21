@@ -3,6 +3,8 @@ package com.lazy.tcc.example.dubbo.aggregate.services.retail;
 import org.junit.Test;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -18,6 +20,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
  * @since 2018/12/11.
  */
 @SpringBootTest
+@ComponentScan({"com.lazy.tcc.example.dubbo.*"})
+@EnableAspectJAutoProxy(proxyTargetClass = true)
 @EnableAutoConfiguration
 public class ShopCartTests extends BaseTests {
 

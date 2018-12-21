@@ -8,6 +8,7 @@ import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.WeavingPointInfo;
 import com.lazy.tcc.core.exception.TransactionManagerException;
 import com.lazy.tcc.core.processor.support.AbstractProcessor;
+import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -92,18 +93,19 @@ public final class ParticipantProcessor extends AbstractProcessor {
             throw new TransactionManagerException("not exists active transaction");
         }
 
+        Method method = ((MethodSignature) (pointInfo.getJoinPoint().getSignature())).getMethod();
         Invoker cancelInvoker = new Invoker()
                 .setTxId(transaction.getTxId())
                 .setArgs(pointInfo.getJoinPoint().getArgs())
                 .setMethodName(pointInfo.getCompensable().cancelMethod())
-                .setParameterTypes(Objects.requireNonNull(this.getCancelMethod(pointInfo)).getParameterTypes())
-                .setTargetClass(pointInfo.getJoinPoint().getTarget().getClass());
+                .setParameterTypes(method.getParameterTypes())
+                .setTargetClass(method.getClass());
 
         Invoker confirmInvoker = new Invoker()
                 .setTxId(transaction.getTxId())
                 .setArgs(pointInfo.getJoinPoint().getArgs())
                 .setMethodName(pointInfo.getCompensable().confirmMethod())
-                .setParameterTypes(Objects.requireNonNull(this.getConfirmMethod(pointInfo)).getParameterTypes())
+                .setParameterTypes(method.getParameterTypes())
                 .setTargetClass(pointInfo.getJoinPoint().getTarget().getClass());
 
         transaction.getParticipants().add(
@@ -128,10 +130,17 @@ public final class ParticipantProcessor extends AbstractProcessor {
 
         try {
 
-            return pointInfo.getJoinPoint().getTarget().getClass()
-                    .getDeclaredMethod(pointInfo.getCompensable().cancelMethod());
+            Method method = ((MethodSignature) (pointInfo.getJoinPoint().getSignature())).getMethod();
+
+            Method cancelMethod = pointInfo.getJoinPoint().getTarget().getClass()
+                    .getDeclaredMethod(pointInfo.getCompensable().cancelMethod(), method.getParameterTypes());
+
+            if (cancelMethod == null){
+                throw new TransactionManagerException("not definition cancel method " + pointInfo.getCompensable().cancelMethod());
+            }
+            return method;
         } catch (NoSuchMethodException e) {
-            return null;
+            throw new TransactionManagerException(e);
         }
     }
 
@@ -145,10 +154,16 @@ public final class ParticipantProcessor extends AbstractProcessor {
 
         try {
 
-            return pointInfo.getJoinPoint().getTarget().getClass()
-                    .getDeclaredMethod(pointInfo.getCompensable().confirmMethod());
+            Method method = ((MethodSignature) (pointInfo.getJoinPoint().getSignature())).getMethod();
+
+            Method confirmMethod = pointInfo.getJoinPoint().getTarget().getClass()
+                    .getDeclaredMethod(pointInfo.getCompensable().cancelMethod(), method.getParameterTypes());
+            if (confirmMethod == null){
+                throw new TransactionManagerException("not definition confirm method " + pointInfo.getCompensable().confirmMethod());
+            }
+            return method;
         } catch (NoSuchMethodException e) {
-            return null;
+            throw new TransactionManagerException(e);
         }
     }
 }

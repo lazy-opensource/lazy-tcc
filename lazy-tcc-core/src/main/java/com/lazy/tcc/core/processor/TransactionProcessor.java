@@ -125,16 +125,13 @@ public final class TransactionProcessor extends AbstractProcessor {
 
             try {
 
-                //begin new transaction after, setter transaction context to propagator
-                TransactionContextPropagatorSingleFactory.create(pointInfo.getCompensable().propagator()).setContext(
-                        new TransactionContext().setTxId(transaction.getTxId())
-                                .setTxPhase(transaction.getTxPhase())
-                );
+//                //begin new transaction after, setter transaction context to propagator
+//                TransactionContextPropagatorSingleFactory.create(pointInfo.getCompensable().propagator()).setContext(
+//                        new TransactionContext().setTxId(transaction.getTxId())
+//                                .setTxPhase(transaction.getTxPhase())
+//                );
                 //execute program
                 invokeVal = pointInfo.getJoinPoint().proceed();
-
-                //Attempt to add yourself to the current transaction participant
-                this.participantProcessor.participant(pointInfo);
             } catch (Throwable tryException) {
 
                 logger.error("program exception, rollback transaction");

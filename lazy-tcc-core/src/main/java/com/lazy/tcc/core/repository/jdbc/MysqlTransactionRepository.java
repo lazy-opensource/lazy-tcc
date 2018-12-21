@@ -2,6 +2,7 @@ package com.lazy.tcc.core.repository.jdbc;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
+import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
@@ -222,8 +223,6 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
     @SuppressWarnings("unchecked")
     private TransactionEntity getRow(ResultSet resultSet) throws Exception {
-        byte[] bytes = resultSet.getBytes("content_byte");
-        System.out.println(bytes.toString());
         return new TransactionEntity()
                 .setLastUpdateTime(resultSet.getString("last_update_time"))
                 .setCreateTime(resultSet.getString("create_time"))
@@ -231,7 +230,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
                 .setTxPhase(TransactionPhase.valueOf(resultSet.getInt("tx_phase")))
                 .setParticipants(serialization.deserialize(
                         new ByteArrayInputStream(resultSet.getBytes("content_byte")))
-                        .readObject(List.class))
+                        .readObject(TransactionEntity.class).getParticipants())
                 .setRetryCount(resultSet.getInt("retry_count"))
                 .setTxId(resultSet.getLong("tx_id"));
     }
