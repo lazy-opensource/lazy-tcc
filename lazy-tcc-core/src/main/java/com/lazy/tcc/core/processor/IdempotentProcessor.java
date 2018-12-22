@@ -15,7 +15,7 @@ import com.lazy.tcc.core.processor.support.AbstractProcessor;
 import com.lazy.tcc.core.propagator.IdempotentContextPropagator;
 import com.lazy.tcc.core.propagator.IdempotentContextPropagatorSingleFactory;
 import com.lazy.tcc.core.repository.IdempotentRepositoryFactory;
-import com.lazy.tcc.core.repository.jdbc.MysqlIdempotentRepository;
+import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 
 /**
  * <p>
@@ -29,7 +29,7 @@ public final class IdempotentProcessor extends AbstractProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(IdempotentProcessor.class);
 
-    private static final MysqlIdempotentRepository IDEMPOTENT_REPOSITORY = (MysqlIdempotentRepository) IdempotentRepositoryFactory.create();
+    private static final AbstractIdempotentRepository IDEMPOTENT_REPOSITORY = IdempotentRepositoryFactory.create();
 
     private static IdempotentProcessor single;
 

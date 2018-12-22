@@ -4,10 +4,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.lazy.tcc.common.enums.ApplicationRole;
 import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.core.annotation.Idempotent;
+import com.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
+import com.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import com.lazy.tcc.example.dubbo.shared.services.customer.ICustomerService;
 import com.lazy.tcc.example.dubbo.shared.services.customer.repository.ICustomerRepository;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +26,8 @@ import java.math.BigDecimal;
         version = "${customer.service.version}",
         application = "${dubbo.application.id}",
         protocol = "${dubbo.protocol.id}",
-        registry = "${dubbo.registry.id}"
+        registry = "${dubbo.registry.id}",
+        proxy = "lazytccjavassist"
 )
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class DefaultCustomerServiceImpl implements ICustomerService {
@@ -42,7 +43,7 @@ public class DefaultCustomerServiceImpl implements ICustomerService {
      * @param capital    capital {@link BigDecimal}
      */
     @Override
-    @Compensable(propagator = DubboTransactionContextPropagator.class, confirmMethod = "confirmDeductCapital", cancelMethod = "cancelDeductCapital")
+    @Compensable(simpleDesc = "扣减客户资金", propagator = DubboTransactionContextPropagator.class, confirmMethod = "confirmDeductCapital", cancelMethod = "cancelDeductCapital")
     public void deductCapital(String customerNo, BigDecimal capital) {
         repository.deductCapital(customerNo, capital);
     }
@@ -54,7 +55,7 @@ public class DefaultCustomerServiceImpl implements ICustomerService {
      * @param capital    capital {@link BigDecimal}
      */
     @Override
-    @Idempotent(propagator = DubboIdempotentContextPropagator.class, applicationRole = ApplicationRole.PROVIDER)
+    @Idempotent(simpleDesc = "确认扣减客户资金", propagator = DubboIdempotentContextPropagator.class, applicationRole = ApplicationRole.PROVIDER)
     public void confirmDeductCapital(String customerNo, BigDecimal capital) {
         repository.confirmDeductCapital(customerNo, capital);
     }
@@ -66,7 +67,7 @@ public class DefaultCustomerServiceImpl implements ICustomerService {
      * @param capital    capital {@link BigDecimal}
      */
     @Override
-    @Idempotent(propagator = DubboIdempotentContextPropagator.class, applicationRole = ApplicationRole.PROVIDER)
+    @Idempotent(simpleDesc = "取消扣减客户资金", propagator = DubboIdempotentContextPropagator.class, applicationRole = ApplicationRole.PROVIDER)
     public void cancelDeductCapital(String customerNo, BigDecimal capital) {
         repository.cancelDeductCapital(customerNo, capital);
     }

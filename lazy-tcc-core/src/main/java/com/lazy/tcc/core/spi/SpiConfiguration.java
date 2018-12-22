@@ -5,9 +5,13 @@ import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.cache.guava.GoogleGuavaCache;
 import com.lazy.tcc.core.logger.LoggerAdapter;
+import com.lazy.tcc.core.repository.jdbc.MysqlAppKeyRepository;
 import com.lazy.tcc.core.repository.jdbc.MysqlIdempotentRepository;
+import com.lazy.tcc.core.repository.jdbc.MysqlParticipantRepository;
 import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractAppKeyRepository;
 import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
+import com.lazy.tcc.core.repository.support.AbstractParticipantRepository;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
 import com.lazy.tcc.core.serializer.jdk.JdkSerialization;
@@ -32,15 +36,84 @@ public class SpiConfiguration {
     private Class<? extends Cache> cacheClassImpl = GoogleGuavaCache.class;
     private Class<? extends AbstractTransactionRepository> txRepository = MysqlTransactionRepository.class;
     private Class<? extends AbstractIdempotentRepository> idempotentRepository = MysqlIdempotentRepository.class;
+    private Class<? extends AbstractAppKeyRepository> appkeyRepository = MysqlAppKeyRepository.class;
+    private Class<? extends AbstractParticipantRepository> participantRepository = MysqlParticipantRepository.class;
     private Class<? extends LoggerAdapter> loggerAdapter;
     private String txTableName = "lazy_tcc_transaction";
     private String txDatabaseName;
     private String idempotentTableName = "lazy_tcc_idempotent";
+    private String appKeyTableName = "lazy_tcc_app_key";
+    private String participantTableName = "lazy_tcc_participant";
     private String applicationDatabaseName;
-    private String idempotentAppKey = defaultAppKey();
+    private String appKey;
+    private String appDesc;
     private int retryCount = 5;
     private int keepRequestLogDayCount = 31;
     private int compensationMinuteInterval = 10;
+    private boolean enableCompensableScheduler = true;
+
+    public Class<? extends AbstractAppKeyRepository> getAppkeyRepository() {
+        return appkeyRepository;
+    }
+
+    public SpiConfiguration setAppkeyRepository(Class<? extends AbstractAppKeyRepository> appkeyRepository) {
+        this.appkeyRepository = appkeyRepository;
+        return this;
+    }
+
+    public Class<? extends AbstractParticipantRepository> getParticipantRepository() {
+        return participantRepository;
+    }
+
+    public SpiConfiguration setParticipantRepository(Class<? extends AbstractParticipantRepository> participantRepository) {
+        this.participantRepository = participantRepository;
+        return this;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public SpiConfiguration setAppKey(String appKey) {
+        this.appKey = appKey;
+        return this;
+    }
+
+    public String getAppDesc() {
+        return appDesc;
+    }
+
+    public SpiConfiguration setAppDesc(String appDesc) {
+        this.appDesc = appDesc;
+        return this;
+    }
+
+    public String getAppKeyTableName() {
+        return appKeyTableName;
+    }
+
+    public SpiConfiguration setAppKeyTableName(String appKeyTableName) {
+        this.appKeyTableName = appKeyTableName;
+        return this;
+    }
+
+    public String getParticipantTableName() {
+        return participantTableName;
+    }
+
+    public SpiConfiguration setParticipantTableName(String participantTableName) {
+        this.participantTableName = participantTableName;
+        return this;
+    }
+
+    public boolean isEnableCompensableScheduler() {
+        return enableCompensableScheduler;
+    }
+
+    public SpiConfiguration setEnableCompensableScheduler(boolean enableCompensableScheduler) {
+        this.enableCompensableScheduler = enableCompensableScheduler;
+        return this;
+    }
 
     private String datasourceDriver;
     private String datasourceUrl;
@@ -114,14 +187,6 @@ public class SpiConfiguration {
         return String.format("%s_%s", hostName, ip);
     }
 
-    public String getIdempotentAppKey() {
-        return idempotentAppKey;
-    }
-
-    public SpiConfiguration setIdempotentAppKey(String idempotentAppKey) {
-        this.idempotentAppKey = idempotentAppKey;
-        return this;
-    }
 
     public int getKeepRequestLogDayCount() {
         return keepRequestLogDayCount;

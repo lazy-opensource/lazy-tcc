@@ -36,4 +36,11 @@ public @interface Idempotent {
      */
     ApplicationRole applicationRole();
 
+    /**
+     * request simple desc
+     *
+     * @return {@link String}
+     */
+    String simpleDesc() default "";
+
 }

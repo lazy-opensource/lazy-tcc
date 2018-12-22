@@ -3,10 +3,9 @@ package com.lazy.tcc.core;
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.common.utils.SnowflakeIdWorkerUtils;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * <p>
@@ -17,6 +16,7 @@ import java.util.List;
  * @since 2018/12/13.
  */
 public class Transaction implements Serializable {
+
 
     /**
      * Serializable Version
@@ -31,6 +31,7 @@ public class Transaction implements Serializable {
         this.txId = SnowflakeIdWorkerUtils.getSingle().nextId();
         this.txPhase = TransactionPhase.TRY;
         this.retryCount = 0;
+        this.appKey = SpiConfiguration.getInstance().getAppKey();
         this.createTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
         this.lastUpdateTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
         return this;
@@ -40,6 +41,7 @@ public class Transaction implements Serializable {
      * transaction id
      */
     private Long txId;
+    private String appKey;
     /**
      * transaction phase
      * {@link TransactionPhase}
@@ -61,10 +63,6 @@ public class Transaction implements Serializable {
      * optimistic version
      */
     private long version = 1;
-    /**
-     * participant list
-     */
-    private List<Participant> participants = new ArrayList<>();
 
     public void updateVersion() {
         this.version++;
@@ -72,6 +70,15 @@ public class Transaction implements Serializable {
 
     public void updateLastUpdateTime() {
         this.lastUpdateTime = DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS);
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public Transaction setAppKey(String appKey) {
+        this.appKey = appKey;
+        return this;
     }
 
     public Long getTxId() {
@@ -127,14 +134,4 @@ public class Transaction implements Serializable {
         this.version = version;
         return this;
     }
-
-    public List<Participant> getParticipants() {
-        return participants;
-    }
-
-    public Transaction setParticipants(List<Participant> participants) {
-        this.participants = participants;
-        return this;
-    }
-
 }

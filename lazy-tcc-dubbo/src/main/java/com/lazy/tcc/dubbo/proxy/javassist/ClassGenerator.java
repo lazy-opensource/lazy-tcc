@@ -1,13 +1,14 @@
-package com.lazy.tcc.lazy.tcc.dubbo.proxy.javassist;
+package com.lazy.tcc.dubbo.proxy.javassist;
 
 import com.alibaba.dubbo.common.utils.ReflectUtils;
+import com.lazy.tcc.core.annotation.Compensable;
+import com.lazy.tcc.core.annotation.Idempotent;
 import javassist.*;
 import javassist.bytecode.AnnotationsAttribute;
 import javassist.bytecode.ConstPool;
 import javassist.bytecode.annotation.Annotation;
 import javassist.bytecode.annotation.ClassMemberValue;
 import javassist.bytecode.annotation.EnumMemberValue;
-import javassist.bytecode.annotation.StringMemberValue;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -64,9 +65,8 @@ public final class ClassGenerator {
 
     private List<String> mFields, mConstructors, mMethods;
 
-    private Set<String> compensableMethods = new HashSet<String>();
-
-    private Set<String> idempotentMethods = new HashSet<String>();
+    private Map<String, Compensable> compensableMethods = new HashMap<>();
+    private Map<String, Idempotent> idempotentMethods = new HashMap<>();
 
     private Map<String, Method> mCopyMethods; // <method desc,method instance>
 
@@ -142,10 +142,10 @@ public final class ClassGenerator {
     }
 
     public ClassGenerator addMethod(String name, int mod, Class<?> rt, Class<?>[] pts, String body) {
-        return addMethod(false, false, name, mod, rt, pts, null, body);
+        return addMethod(null, null, name, mod, rt, pts, null, body);
     }
 
-    public ClassGenerator addMethod(boolean isCompensableMethod, boolean isIdempotentMethod,  String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets, String body) {
+    public ClassGenerator addMethod(Compensable compensable, Idempotent idempoten, String name, int mod, Class<?> rt, Class<?>[] pts, Class<?>[] ets, String body) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(modifier(mod)).append(' ').append(ReflectUtils.getName(rt)).append(' ').append(name);
@@ -167,12 +167,12 @@ public final class ClassGenerator {
         }
         sb.append('{').append(body).append('}');
 
-        if (isCompensableMethod) {
-            compensableMethods.add(sb.toString());
+        if (compensable != null) {
+            compensableMethods.put(sb.toString(), compensable);
         }
 
-        if (isIdempotentMethod) {
-            idempotentMethods.add(sb.toString());
+        if (idempoten != null) {
+            idempotentMethods.put(sb.toString(), idempoten);
         }
 
         return addMethod(sb.toString());
@@ -269,36 +269,36 @@ public final class ClassGenerator {
 
                         CtMethod ctMethod = CtNewMethod.make(code, mCtc);
 
-                        if (compensableMethods.contains(code)) {
+                        if (compensableMethods.get(code) != null) {
 
+                            Compensable compensable = compensableMethods.get(code);
                             ConstPool constpool = mCtc.getClassFile().getConstPool();
                             AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
                             Annotation annot = new Annotation("com.lazy.tcc.core.annotation.Compensable", constpool);
                             EnumMemberValue enumMemberValue = new EnumMemberValue(constpool);
                             enumMemberValue.setType("com.lazy.tcc.common.enums.Propagation");
-                            enumMemberValue.setValue("REQUIRED");
+                            enumMemberValue.setValue(compensable.propagation().name());
                             annot.addMemberValue("propagation", enumMemberValue);
-                            annot.addMemberValue("confirmMethod", new StringMemberValue(ctMethod.getName(), constpool));
-                            annot.addMemberValue("cancelMethod", new StringMemberValue(ctMethod.getName(), constpool));
 
-                            ClassMemberValue classMemberValue = new ClassMemberValue("com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator", constpool);
+                            ClassMemberValue classMemberValue = new ClassMemberValue("DubboTransactionContextPropagator", constpool);
                             annot.addMemberValue("propagator", classMemberValue);
 
                             attr.addAnnotation(annot);
                             ctMethod.getMethodInfo().addAttribute(attr);
                         }
 
-                        if (idempotentMethods.contains(code)) {
+                        if (idempotentMethods.get(code) != null) {
 
+                            Idempotent idempotent = idempotentMethods.get(code);
                             ConstPool constpool = mCtc.getClassFile().getConstPool();
                             AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
                             Annotation annot = new Annotation("com.lazy.tcc.core.annotation.Idempotemt", constpool);
                             EnumMemberValue enumMemberValue = new EnumMemberValue(constpool);
                             enumMemberValue.setType("com.lazy.tcc.common.enums.ApplicationRole");
-                            enumMemberValue.setValue("CONSUMER");
+                            enumMemberValue.setValue(idempotent.applicationRole().name());
                             annot.addMemberValue("applicationRole", enumMemberValue);
 
-                            ClassMemberValue classMemberValue = new ClassMemberValue("com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator", constpool);
+                            ClassMemberValue classMemberValue = new ClassMemberValue("DubboIdempotentContextPropagator", constpool);
                             annot.addMemberValue("propagator", classMemberValue);
 
                             attr.addAnnotation(annot);

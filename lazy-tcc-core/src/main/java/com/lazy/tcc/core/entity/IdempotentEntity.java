@@ -20,7 +20,7 @@ public class IdempotentEntity extends BasicEntity implements Serializable {
     private static final long serialVersionUID = 68845234626462L;
 
     @Override
-    public Serializable pkVal() {
+    public Serializable cacheKey() {
         return this.pk;
     }
 

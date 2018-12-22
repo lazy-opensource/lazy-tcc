@@ -2,11 +2,15 @@ package com.lazy.tcc.core.scheduler.job;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.core.TransactionContext;
+import com.lazy.tcc.core.entity.ParticipantEntity;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
+import com.lazy.tcc.core.mapper.ParticipantMapper;
+import com.lazy.tcc.core.repository.ParticipantRepositoryFactory;
 import com.lazy.tcc.core.repository.TransactionRepositoryFactory;
-import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractParticipantRepository;
+import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -24,7 +28,8 @@ import java.util.List;
 public class CompensableTransactionJob implements Job {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CompensableTransactionJob.class);
-    private static final MysqlTransactionRepository TRANSACTION_REPOSITORY = (MysqlTransactionRepository) TransactionRepositoryFactory.create();
+    private static final AbstractTransactionRepository TRANSACTION_REPOSITORY = TransactionRepositoryFactory.create();
+    private static final AbstractParticipantRepository PARTICIPANT_REPOSITORY = ParticipantRepositoryFactory.create();
 
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
@@ -34,7 +39,7 @@ public class CompensableTransactionJob implements Job {
         long endTime = System.currentTimeMillis();
 
         long consumingTime = endTime - beginTime;
-        LOGGER.info("CompensableTransactionJob Finished: Consuming Time: " + consumingTime / 1000 + "s");
+        LOGGER.info("CompensableTransactionJob Execute Finished: Consuming Time: " + consumingTime / 1000 + "s");
     }
 
     private void doExecute() {
@@ -52,7 +57,9 @@ public class CompensableTransactionJob implements Job {
 
             try {
 
-                if (entity.getParticipants().isEmpty()) {
+                List<ParticipantEntity> participantEntities = PARTICIPANT_REPOSITORY.findByTxId(entity.getTxId());
+
+                if (participantEntities.isEmpty()) {
 
                     TRANSACTION_REPOSITORY.delete(entity.getTxId());
                     continue;
@@ -64,13 +71,16 @@ public class CompensableTransactionJob implements Job {
 
                 if (entity.getTxPhase().equals(TransactionPhase.TRY)) {
 
-                    entity.getParticipants().forEach(participant -> participant.getCancelMethodInvoker().invoker(context));
+                    participantEntities.forEach(participantEntity -> ParticipantMapper.INSTANCE.from(participantEntity)
+                            .getCancelMethodInvoker().invoker(context));
                 } else if (entity.getTxPhase().equals(TransactionPhase.CONFIRM)) {
 
-                    entity.getParticipants().forEach(participant -> participant.getConfirmMethodInvoker().invoker(context));
+                    participantEntities.forEach(participantEntity -> ParticipantMapper.INSTANCE.from(participantEntity)
+                            .getConfirmMethodInvoker().invoker(context));
                 } else if (entity.getTxPhase().equals(TransactionPhase.CANCEL)) {
 
-                    entity.getParticipants().forEach(participant -> participant.getCancelMethodInvoker().invoker(context));
+                    participantEntities.forEach(participantEntity -> ParticipantMapper.INSTANCE.from(participantEntity)
+                            .getCancelMethodInvoker().invoker(context));
                 }
 
                 TRANSACTION_REPOSITORY.delete(entity.getTxId());

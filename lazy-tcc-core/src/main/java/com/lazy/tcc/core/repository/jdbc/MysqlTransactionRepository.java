@@ -2,14 +2,11 @@ package com.lazy.tcc.core.repository.jdbc;
 
 import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
-import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -49,7 +46,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             if (resultSet.next()) {
                 int isExists = resultSet.getInt("is_exists");
                 if (isExists > 0) {
-                    logger.info(String.format("transaction table %s exists", SpiConfiguration.getInstance().getIdempotentTableName()));
+                    logger.info(String.format("transaction table %s exists", SpiConfiguration.getInstance().getTxTableName()));
 
                     return 1;
                 }
@@ -61,8 +58,8 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
                     "  `tx_id` bigint(20) NOT NULL COMMENT '主键'," +
                     "  `tx_phase` int(5) NOT NULL COMMENT '事务阶段 try,confirm,cancel'," +
                     "  `retry_count` int(5) NOT NULL COMMENT '重试次数'," +
-                    "  `content_byte` varbinary(8000) NOT NULL COMMENT '参与者字节码'," +
                     "  `version` bigint(20) NOT NULL COMMENT '乐观锁版本号'," +
+                    "  `app_key` varchar(32) NOT NULL COMMENT '应用key'," +
                     "  `create_time` datetime NOT NULL COMMENT '创建时间'," +
                     "  `last_update_time` datetime NOT NULL COMMENT '最后更新时间'," +
                     "  PRIMARY KEY (`tx_id`)" +
@@ -80,7 +77,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
     }
 
     @Override
-    public int doInsert(TransactionEntity transaction) {
+    public int insert(TransactionEntity transaction) {
         Connection connection = null;
         PreparedStatement stmt = null;
 
@@ -88,21 +85,18 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             connection = this.getConnection();
 
             String builder = "insert into " + SpiConfiguration.getInstance().getTxTableName() +
-                    " (tx_id,content_byte,retry_count,create_time,last_update_time,version,tx_phase) VALUES (?,?,?,?,?,?,?)";
+                    " (tx_id,retry_count,create_time,last_update_time,version,tx_phase,app_key) VALUES (?,?,?,?,?,?,?)";
 
             stmt = connection.prepareStatement(builder);
 
             stmt.setLong(1, transaction.getTxId());
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
-            serialization.serialize(bos).writeObject(transaction);
-            stmt.setBytes(2, bos.toByteArray());
-
-            stmt.setInt(3, transaction.getRetryCount());
+            stmt.setInt(2, transaction.getRetryCount());
+            stmt.setString(3, DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS));
             stmt.setString(4, DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS));
-            stmt.setString(5, DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS));
-            stmt.setLong(6, transaction.getVersion());
-            stmt.setInt(7, transaction.getTxPhase().getVal());
+            stmt.setLong(5, transaction.getVersion());
+            stmt.setInt(6, transaction.getTxPhase().getVal());
+            stmt.setString(7, transaction.getAppKey());
 
             return stmt.executeUpdate();
 
@@ -115,7 +109,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
     }
 
     @Override
-    public int doUpdate(TransactionEntity transaction) {
+    public int update(TransactionEntity transaction) {
         Connection connection = null;
         PreparedStatement stmt = null;
 
@@ -129,20 +123,15 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             connection = this.getConnection();
 
             stmt = connection.prepareStatement("update " + SpiConfiguration.getInstance().getTxTableName() +
-                    " set " + "content_byte = ?,tx_phase = ?,last_update_time = ?, retry_count = ?," +
-                    "version = version + 1 " + "where tx_id = ? and  version = ? and last_update_time = ?");
+                    " set " + "tx_phase = ?,last_update_time = ?, retry_count = ?," +
+                    "version = version + 1 " + "where tx_id = ? and  version = ?");
 
-            ByteArrayOutputStream bos = new ByteArrayOutputStream(512);
-            serialization.serialize(bos).writeObject(transaction);
+            stmt.setInt(1, transaction.getTxPhase().getVal());
+            stmt.setString(2, transaction.getLastUpdateTime());
 
-            stmt.setBytes(1, bos.toByteArray());
-            stmt.setInt(2, transaction.getTxPhase().getVal());
-            stmt.setString(3, transaction.getLastUpdateTime());
-
-            stmt.setInt(4, transaction.getRetryCount());
-            stmt.setLong(5, transaction.getTxId());
-            stmt.setLong(6, currentVersion);
-            stmt.setString(7, lastUpdateTime);
+            stmt.setInt(3, transaction.getRetryCount());
+            stmt.setLong(4, transaction.getTxId());
+            stmt.setLong(5, currentVersion);
 
             return stmt.executeUpdate();
 
@@ -158,11 +147,15 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
     }
 
     @Override
-    public int doDelete(Long id) {
+    public int delete(Long id) {
+
         Connection connection = null;
         PreparedStatement stmt = null;
 
         try {
+
+            PARTICIPANT_REPOSITORY.deleteByTxId(id);
+
             connection = this.getConnection();
 
             String builder = "delete from " + SpiConfiguration.getInstance().getTxTableName() + " where tx_id = ?";
@@ -184,7 +177,7 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public TransactionEntity doFindById(Long id) {
+    public TransactionEntity findById(Long id) {
         Connection connection = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
@@ -227,10 +220,8 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
                 .setLastUpdateTime(resultSet.getString("last_update_time"))
                 .setCreateTime(resultSet.getString("create_time"))
                 .setVersion(resultSet.getLong("version"))
+                .setAppKey(resultSet.getString("app_key"))
                 .setTxPhase(TransactionPhase.valueOf(resultSet.getInt("tx_phase")))
-                .setParticipants(serialization.deserialize(
-                        new ByteArrayInputStream(resultSet.getBytes("content_byte")))
-                        .readObject(TransactionEntity.class).getParticipants())
                 .setRetryCount(resultSet.getInt("retry_count"))
                 .setTxId(resultSet.getLong("tx_id"));
     }
@@ -246,13 +237,14 @@ public class MysqlTransactionRepository extends AbstractTransactionRepository {
             connection = this.getConnection();
 
             String builder = "select * from " + SpiConfiguration.getInstance().getTxTableName()
-                    + " where create_time <= ? and retry_count < ?";
+                    + " where create_time <= ? and retry_count < ? and app_key =?";
             stmt = connection.prepareStatement(builder);
 
             stmt.setString(1,
                     DateUtils.getBeforeByMinuteTime(SpiConfiguration.getInstance().getCompensationMinuteInterval(),
                             DateUtils.YYYY_MM_DD_HH_MM_SS));
             stmt.setInt(2, SpiConfiguration.getInstance().getRetryCount());
+            stmt.setString(3, SpiConfiguration.getInstance().getAppKey());
 
             resultSet = stmt.executeQuery();
             while (resultSet.next()) {

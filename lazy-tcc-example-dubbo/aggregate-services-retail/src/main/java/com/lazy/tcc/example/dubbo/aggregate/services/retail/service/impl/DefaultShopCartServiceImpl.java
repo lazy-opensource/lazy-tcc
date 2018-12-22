@@ -10,11 +10,12 @@ import com.lazy.tcc.example.dubbo.aggregate.services.retail.service.IShopCartSer
 import com.lazy.tcc.example.dubbo.shared.services.customer.ICustomerService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.IStockService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.StockEditorDto;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
+import com.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 
@@ -46,16 +47,16 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
      * Stock Dubbo Service
      */
     @Reference(version = "1.0.0",
-            application = "shared-services-stock",
-            url = "dubbo://localhost:9000")
+            proxy = "lazytccjavassist",
+            application = "shared-dubbo-stock")
     private IStockService iStockService;
 
     /**
      * Customer Dubbo Service
      */
     @Reference(version = "1.0.0",
-            application = "shared-services-customer",
-            url = "dubbo://localhost:9002")
+            proxy = "lazytccjavassist",
+            application = "shared-dubbo-customer")
     private ICustomerService iCustomerService;
 
     /**
@@ -93,7 +94,6 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
         iOrderService.save(orderEntity);
         iOrderItemService.save(orderItemEntity1);
         iOrderItemService.save(orderItemEntity2);
-
 
         //deduct customer capital
         iCustomerService.deductCapital(orderEntity.getCustomerNo(), orderEntity.getTotalAmount());

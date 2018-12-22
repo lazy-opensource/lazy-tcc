@@ -22,7 +22,7 @@ public abstract class AbstractCacheRepository<E extends BasicEntity, ID extends 
     public int insert(E entity) {
         int count = this.doInsert(entity);
         if (count > 0) {
-            cache.put((ID) entity.pkVal(), entity);
+            cache.put((ID) entity.cacheKey(), entity);
         }
         return count;
     }
@@ -31,7 +31,7 @@ public abstract class AbstractCacheRepository<E extends BasicEntity, ID extends 
     public int update(E entity) {
         int count = this.doUpdate(entity);
         if (count > 0) {
-            cache.put((ID) entity.pkVal(), entity);
+            cache.put((ID) entity.cacheKey(), entity);
         }
         return count;
     }

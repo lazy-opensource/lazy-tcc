@@ -19,8 +19,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EntityScan(value = {
         "com.lazy.tcc.example.dubbo.aggregate.services.retail.entity"
 })
-@ComponentScan({"com.lazy.tcc.example.dubbo.*"})
-@EnableAspectJAutoProxy(proxyTargetClass = true)
+@ComponentScan({"com.lazy.tcc.*"})
+@EnableAspectJAutoProxy(proxyTargetClass = true, exposeProxy = true)
 @SpringBootApplication
 public class AggregateServicesRetailApplication {
 

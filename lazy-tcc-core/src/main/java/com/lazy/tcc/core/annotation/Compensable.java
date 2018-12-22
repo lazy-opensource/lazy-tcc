@@ -42,6 +42,13 @@ public @interface Compensable {
     String cancelMethod() default "";
 
     /**
+     * transaction simple descrition
+     *
+     * @return {@link String}
+     */
+    String simpleDesc() default "";
+
+    /**
      * async confirm
      *
      * @return {@link Boolean}

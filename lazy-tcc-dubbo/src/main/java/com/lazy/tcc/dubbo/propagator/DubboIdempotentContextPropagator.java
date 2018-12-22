@@ -1,4 +1,4 @@
-package com.lazy.tcc.lazy.tcc.dubbo.propagator;
+package com.lazy.tcc.dubbo.propagator;
 
 
 import com.alibaba.dubbo.rpc.RpcContext;

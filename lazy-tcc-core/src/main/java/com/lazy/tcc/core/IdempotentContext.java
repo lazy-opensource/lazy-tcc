@@ -24,6 +24,7 @@ public class IdempotentContext implements Serializable {
     private TransactionPhase txPhase;
     private String businessRec;
 
+
     public String getBusinessRec() {
         return businessRec;
     }

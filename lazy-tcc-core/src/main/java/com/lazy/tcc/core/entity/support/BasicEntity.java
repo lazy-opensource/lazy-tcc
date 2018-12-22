@@ -17,6 +17,6 @@ public abstract class BasicEntity implements Serializable {
      */
     private static final long serialVersionUID = 345678654345243L;
 
-    public abstract Serializable pkVal();
+    public abstract Serializable cacheKey();
 
 }

@@ -1,6 +1,8 @@
-package com.lazy.tcc.lazy.tcc.dubbo.proxy.jdk;
+package com.lazy.tcc.dubbo.proxy.jdk;
 
-import com.lazy.tcc.common.utils.ReflectionUtils;
+
+import com.alibaba.dubbo.rpc.Invoker;
+import com.alibaba.dubbo.rpc.RpcInvocation;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.Signature;
@@ -12,10 +14,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-/**
- * The Class From tcc-transaction
- */
 public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint.StaticPart {
+
+    private Invoker<?> invoker;
 
     private Object proxy;
 
@@ -32,11 +33,12 @@ public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint
      */
     private SourceLocation sourceLocation;
 
-    public MethodProceedingJoinPoint(Object proxy, Object target, Method method, Object[] args) {
-        this.proxy = proxy;
+    public MethodProceedingJoinPoint(Object proxy, Invoker invoker, Object target, Method method, Object[] args) {
+        this.invoker = invoker;
         this.target = target;
         this.method = method;
         this.args = args;
+        this.proxy = proxy;
     }
 
     @Override
@@ -49,8 +51,20 @@ public class MethodProceedingJoinPoint implements ProceedingJoinPoint, JoinPoint
 
         // Use reflection to invoke the method.
         try {
-            ReflectionUtils.makeAccessible(method);
-            return method.invoke(target, args);
+//            ReflectionUtils.makeAccessible(method);
+//            return method.invoke(target, args);
+
+            String methodName = method.getName();
+            Class<?>[] parameterTypes = method.getParameterTypes();
+            if (method.getDeclaringClass() == Object.class) {
+                return method.invoke(this.invoker, args);
+            } else if ("toString".equals(methodName) && parameterTypes.length == 0) {
+                return this.invoker.toString();
+            } else if ("hashCode".equals(methodName) && parameterTypes.length == 0) {
+                return this.invoker.hashCode();
+            } else {
+                return "equals".equals(methodName) && parameterTypes.length == 1 ? this.invoker.equals(args[0]) : this.invoker.invoke(new RpcInvocation(method, args)).recreate();
+            }
         } catch (InvocationTargetException ex) {
             // Invoked method threw a checked exception.
             // We must rethrow it. The client won't see the interceptor.

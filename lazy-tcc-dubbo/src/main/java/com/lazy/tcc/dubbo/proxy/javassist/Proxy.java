@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.lazy.tcc.lazy.tcc.dubbo.proxy.javassist;
+package com.lazy.tcc.dubbo.proxy.javassist;
 
 import com.alibaba.dubbo.common.utils.ClassHelper;
 import com.alibaba.dubbo.common.utils.ReflectUtils;
@@ -174,11 +174,11 @@ public abstract class Proxy {
                     Compensable compensable = method.getAnnotation(Compensable.class);
                     Idempotent idempotent = method.getAnnotation(Idempotent.class);
                     if (compensable != null) {
-                        ccp.addMethod(true, false, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
-                    } else if (idempotent != null){
-                        ccp.addMethod(false, true, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
-                    }else {
-                        ccp.addMethod(false, false, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+                        ccp.addMethod(compensable, null, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+                    } else if (idempotent != null) {
+                        ccp.addMethod(null, idempotent, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
+                    } else {
+                        ccp.addMethod(null, null, method.getName(), method.getModifiers(), rt, pts, method.getExceptionTypes(), code.toString());
                     }
                 }
             }

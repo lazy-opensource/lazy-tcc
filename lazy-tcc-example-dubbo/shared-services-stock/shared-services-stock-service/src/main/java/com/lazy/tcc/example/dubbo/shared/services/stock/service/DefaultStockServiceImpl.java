@@ -3,16 +3,18 @@ package com.lazy.tcc.example.dubbo.shared.services.stock.service;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.lazy.tcc.common.enums.ApplicationRole;
 import com.lazy.tcc.core.annotation.Compensable;
-import com.lazy.tcc.core.annotation.Idempotent;;
+import com.lazy.tcc.core.annotation.Idempotent;
+import com.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
+import com.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.IStockService;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseBuilder;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseDto;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.StockEditorDto;
 import com.lazy.tcc.example.dubbo.shared.services.stock.repository.IStockRepository;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+
+;
 
 /**
  * <p>
@@ -27,7 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
         version = "${stock.service.version}",
         application = "${dubbo.application.id}",
         protocol = "${dubbo.protocol.id}",
-        registry = "${dubbo.registry.id}"
+        registry = "${dubbo.registry.id}",
+        proxy = "lazytccjavassist"
 )
 @Transactional(rollbackFor = {Exception.class, RuntimeException.class})
 public class DefaultStockServiceImpl implements IStockService {
@@ -42,7 +45,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
-    @Compensable(confirmMethod = "confirmDeductStock", cancelMethod = "cancelDeductStock", propagator = DubboTransactionContextPropagator.class)
+    @Compensable(simpleDesc = "扣减库存", confirmMethod = "confirmDeductStock", cancelMethod = "cancelDeductStock", propagator = DubboTransactionContextPropagator.class)
     public SimpleResponseDto<String> deductStock(StockEditorDto dto) {
         repository.deductStock(dto.getProductSku(), dto.getStockNum());
 
@@ -56,7 +59,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
-    @Idempotent(applicationRole = ApplicationRole.PROVIDER, propagator = DubboIdempotentContextPropagator.class)
+    @Idempotent(simpleDesc = "确认扣减库存请求", applicationRole = ApplicationRole.PROVIDER, propagator = DubboIdempotentContextPropagator.class)
     public SimpleResponseDto<String> confirmDeductStock(StockEditorDto dto) {
         repository.confirmDeductStock(dto.getProductSku(), dto.getStockNum());
 
@@ -70,7 +73,7 @@ public class DefaultStockServiceImpl implements IStockService {
      * @return Operation Result {@link SimpleResponseDto } {@link String}
      */
     @Override
-    @Idempotent(applicationRole = ApplicationRole.PROVIDER, propagator = DubboIdempotentContextPropagator.class)
+    @Idempotent(simpleDesc = "取消扣减库存请求", applicationRole = ApplicationRole.PROVIDER, propagator = DubboIdempotentContextPropagator.class)
     public SimpleResponseDto<String> cancelDeductStock(StockEditorDto dto) {
         repository.cancelDeductStock(dto.getProductSku(), dto.getStockNum());
 

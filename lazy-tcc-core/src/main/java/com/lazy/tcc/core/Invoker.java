@@ -120,7 +120,7 @@ public class Invoker implements Serializable {
                     IdempotentContextPropagatorSingleFactory.create(IdempotentContextPropagator.class).setIdempotentContext(
                             new IdempotentContext().
                                     setPk(new com.lazy.tcc.core.Idempotent.IdempotentPk()
-                                            .setAppKey(SpiConfiguration.getInstance().getIdempotentAppKey())
+                                            .setAppKey(SpiConfiguration.getInstance().getAppKey())
                                             .setReqSerialNum(this.reqSerialNum))
                                     .setTxPhase(context.getTxPhase())
                     );

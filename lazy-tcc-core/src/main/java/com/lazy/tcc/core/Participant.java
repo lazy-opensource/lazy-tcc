@@ -20,23 +20,73 @@ public class Participant implements Serializable {
      */
     private static final long serialVersionUID = 4565437665462L;
 
+    private Long id;
     private Long txId;
-    private String cancelIdempotentId;
+    private String appKey;
+    /**
+     * transaction last update time
+     */
+    private String lastUpdateTime;
+    /**
+     * transaction create time
+     */
+    private String createTime;
+    /**
+     * optimistic version
+     */
+    private long version = 1;
     private Invoker confirmMethodInvoker;
     private Invoker cancelMethodInvoker;
+
+    public Long getId() {
+        return id;
+    }
+
+    public Participant setId(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public String getCreateTime() {
+        return createTime;
+    }
+
+    public Participant setCreateTime(String createTime) {
+        this.createTime = createTime;
+        return this;
+    }
+
+    public String getLastUpdateTime() {
+        return lastUpdateTime;
+    }
+
+    public Participant setLastUpdateTime(String lastUpdateTime) {
+        this.lastUpdateTime = lastUpdateTime;
+        return this;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public Participant setVersion(long version) {
+        this.version = version;
+        return this;
+    }
+
+    public String getAppKey() {
+        return appKey;
+    }
+
+    public Participant setAppKey(String appKey) {
+        this.appKey = appKey;
+        return this;
+    }
 
     public Long getTxId() {
         return txId;
     }
 
-    public String getCancelIdempotentId() {
-        return cancelIdempotentId;
-    }
-
-    public Participant setCancelIdempotentId(String cancelIdempotentId) {
-        this.cancelIdempotentId = cancelIdempotentId;
-        return this;
-    }
 
     public Participant setTxId(Long txId) {
         this.txId = txId;

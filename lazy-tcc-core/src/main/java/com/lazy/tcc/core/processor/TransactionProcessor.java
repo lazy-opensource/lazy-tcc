@@ -125,11 +125,6 @@ public final class TransactionProcessor extends AbstractProcessor {
 
             try {
 
-//                //begin new transaction after, setter transaction context to propagator
-//                TransactionContextPropagatorSingleFactory.create(pointInfo.getCompensable().propagator()).setContext(
-//                        new TransactionContext().setTxId(transaction.getTxId())
-//                                .setTxPhase(transaction.getTxPhase())
-//                );
                 //execute program
                 invokeVal = pointInfo.getJoinPoint().proceed();
             } catch (Throwable tryException) {

@@ -2,19 +2,24 @@ package com.lazy.tcc.core;
 
 import com.alibaba.fastjson.JSON;
 import com.lazy.tcc.common.enums.TransactionPhase;
+import com.lazy.tcc.core.entity.ParticipantEntity;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.CancelException;
 import com.lazy.tcc.core.exception.ConfirmException;
 import com.lazy.tcc.core.exception.TransactionManagerException;
 import com.lazy.tcc.core.logger.Logger;
 import com.lazy.tcc.core.logger.LoggerFactory;
+import com.lazy.tcc.core.mapper.ParticipantMapper;
 import com.lazy.tcc.core.mapper.TransactionMapper;
 import com.lazy.tcc.core.propagator.TransactionContextPropagator;
 import com.lazy.tcc.core.propagator.TransactionContextPropagatorSingleFactory;
+import com.lazy.tcc.core.repository.ParticipantRepositoryFactory;
 import com.lazy.tcc.core.repository.TransactionRepositoryFactory;
-import com.lazy.tcc.core.repository.jdbc.MysqlTransactionRepository;
+import com.lazy.tcc.core.repository.support.AbstractParticipantRepository;
+import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.threadpool.SysDefaultThreadPool;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -30,7 +35,8 @@ public final class TransactionManager {
 
     private final static Logger LOGGER = LoggerFactory.getLogger(TransactionManager.class);
     private static final ThreadLocal<LinkedList<Long>> CURRENT_THREAD_TRANSACTION_ID_HOLDER = new ThreadLocal<>();
-    private static final MysqlTransactionRepository TRANSACTION_REPOSITORY = (MysqlTransactionRepository) TransactionRepositoryFactory.create();
+    private static final AbstractTransactionRepository TRANSACTION_REPOSITORY = TransactionRepositoryFactory.create();
+    private static final AbstractParticipantRepository PARTICIPANT_REPOSITORY = ParticipantRepositoryFactory.create();
 
     private static TransactionManager single;
 
@@ -111,7 +117,7 @@ public final class TransactionManager {
             );
         }
 
-        List<Participant> allParticipants = transaction.getParticipants();
+        List<Participant> allParticipants = this.getParticipants(transaction);
 
         for (Participant participant : allParticipants) {
 
@@ -128,15 +134,6 @@ public final class TransactionManager {
         }
 
         this.TRANSACTION_REPOSITORY.delete(transaction.getTxId());
-    }
-
-
-    public void updateParticipant(List<Participant> participantList) {
-        Transaction currentTransaction = this.getCurrentTransaction();
-        assert currentTransaction != null;
-        currentTransaction.setParticipants(participantList);
-
-        TRANSACTION_REPOSITORY.update(TransactionMapper.INSTANCE.to(currentTransaction));
     }
 
     public void rollback(boolean asyncCancel) {
@@ -185,7 +182,8 @@ public final class TransactionManager {
             );
         }
 
-        for (Participant participant : transaction.getParticipants()) {
+        List<Participant> allParticipants = this.getParticipants(transaction);
+        for (Participant participant : allParticipants) {
 
             if (!participant.getTxId().equals(transaction.getTxId())) {
 
@@ -201,8 +199,8 @@ public final class TransactionManager {
         TRANSACTION_REPOSITORY.delete(transaction.getTxId());
     }
 
-    public void participant(Transaction transaction) {
-        TRANSACTION_REPOSITORY.update(TransactionMapper.INSTANCE.to(transaction));
+    public void participant(Participant participant) {
+        PARTICIPANT_REPOSITORY.insert(ParticipantMapper.INSTANCE.to(participant));
     }
 
     public boolean hasDistributedActiveTransaction(WeavingPointInfo pointInfo) {
@@ -235,11 +233,21 @@ public final class TransactionManager {
                     CURRENT_THREAD_TRANSACTION_ID_HOLDER.remove();
                 }
 
-                if (transaction.getParticipants().isEmpty()) {
+                if (this.getParticipants(transaction).isEmpty()) {
                     TRANSACTION_REPOSITORY.delete(transaction.getTxId());
                 }
             }
         }
+    }
+
+    public List<Participant> getParticipants(Transaction transaction) {
+
+        List<Participant> participants = new ArrayList<>();
+        List<ParticipantEntity> participantEntities = PARTICIPANT_REPOSITORY.findByTxId(transaction.getTxId());
+
+        participantEntities.forEach(participantEntity -> participants.add(ParticipantMapper.INSTANCE.from(participantEntity)));
+
+        return participants;
     }
 
     public TransactionContext getLocalTransactionContext() {

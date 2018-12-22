@@ -1,43 +1,36 @@
 package com.lazy.tcc.core.entity;
 
-import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
+import com.lazy.tcc.core.Invoker;
 import com.lazy.tcc.core.entity.support.BasicEntity;
 
 import java.io.Serializable;
 
 /**
  * <p>
- * TransactionEntity definition
+ * ParticipantEntity definition
  * </p>
  *
  * @author laizhiyuan
  * @since 2018/12/13.
  */
-public class TransactionEntity extends BasicEntity implements Serializable {
+public class ParticipantEntity extends BasicEntity implements Serializable {
 
     /**
      * Serializable Version
      */
-    private static final long serialVersionUID = -994345465462L;
+    private static final long serialVersionUID = -66666735465462L;
 
-    public TransactionEntity() {
+    public ParticipantEntity() {
 
     }
+
+    private Long id;
 
     /**
      * transaction id
      */
     private Long txId;
-    /**
-     * transaction phase
-     * {@link TransactionPhase}
-     */
-    private TransactionPhase txPhase;
-    /**
-     * retry count
-     */
-    private int retryCount;
     /**
      * transaction create time
      */
@@ -50,13 +43,34 @@ public class TransactionEntity extends BasicEntity implements Serializable {
      * optimistic version
      */
     private long version = 1;
+
     private String appKey;
+    private Invoker confirmMethodInvoker;
+    private Invoker cancelMethodInvoker;
+
+    public Invoker getConfirmMethodInvoker() {
+        return confirmMethodInvoker;
+    }
+
+    public ParticipantEntity setConfirmMethodInvoker(Invoker confirmMethodInvoker) {
+        this.confirmMethodInvoker = confirmMethodInvoker;
+        return this;
+    }
+
+    public Invoker getCancelMethodInvoker() {
+        return cancelMethodInvoker;
+    }
+
+    public ParticipantEntity setCancelMethodInvoker(Invoker cancelMethodInvoker) {
+        this.cancelMethodInvoker = cancelMethodInvoker;
+        return this;
+    }
 
     public String getAppKey() {
         return appKey;
     }
 
-    public TransactionEntity setAppKey(String appKey) {
+    public ParticipantEntity setAppKey(String appKey) {
         this.appKey = appKey;
         return this;
     }
@@ -73,34 +87,17 @@ public class TransactionEntity extends BasicEntity implements Serializable {
         return txId;
     }
 
-    public TransactionEntity setTxId(Long txId) {
+    public ParticipantEntity setTxId(Long txId) {
         this.txId = txId;
         return this;
     }
 
-    public TransactionPhase getTxPhase() {
-        return txPhase;
-    }
-
-    public TransactionEntity setTxPhase(TransactionPhase txPhase) {
-        this.txPhase = txPhase;
-        return this;
-    }
-
-    public int getRetryCount() {
-        return retryCount;
-    }
-
-    public TransactionEntity setRetryCount(int retryCount) {
-        this.retryCount = retryCount;
-        return this;
-    }
 
     public String getCreateTime() {
         return createTime;
     }
 
-    public TransactionEntity setCreateTime(String createTime) {
+    public ParticipantEntity setCreateTime(String createTime) {
         this.createTime = createTime;
         return this;
     }
@@ -109,7 +106,7 @@ public class TransactionEntity extends BasicEntity implements Serializable {
         return lastUpdateTime;
     }
 
-    public TransactionEntity setLastUpdateTime(String lastUpdateTime) {
+    public ParticipantEntity setLastUpdateTime(String lastUpdateTime) {
         this.lastUpdateTime = lastUpdateTime;
         return this;
     }
@@ -118,14 +115,22 @@ public class TransactionEntity extends BasicEntity implements Serializable {
         return version;
     }
 
-    public TransactionEntity setVersion(long version) {
+    public ParticipantEntity setVersion(long version) {
         this.version = version;
         return this;
     }
 
+    public Long getId() {
+        return id;
+    }
+
+    public ParticipantEntity setId(Long id) {
+        this.id = id;
+        return this;
+    }
 
     @Override
     public Serializable cacheKey() {
-        return this.txId;
+        return this.id;
     }
 }

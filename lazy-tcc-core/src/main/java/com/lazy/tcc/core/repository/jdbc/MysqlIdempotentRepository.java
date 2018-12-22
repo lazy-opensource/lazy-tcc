@@ -1,6 +1,5 @@
 package com.lazy.tcc.core.repository.jdbc;
 
-import com.alibaba.fastjson.JSON;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.IdempotentEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;

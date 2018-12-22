@@ -1,0 +1,2 @@
+lazytccjavassist=com.lazy.tcc.dubbo.proxy.javassist.JavassistProxyFactory
+lazytccjdk=com.lazy.tcc.dubbo.proxy.jdk.TccJdkProxyFactory

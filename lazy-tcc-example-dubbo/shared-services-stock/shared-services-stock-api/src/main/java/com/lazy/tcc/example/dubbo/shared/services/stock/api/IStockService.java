@@ -5,8 +5,8 @@ import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.core.annotation.Idempotent;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.SimpleResponseDto;
 import com.lazy.tcc.example.dubbo.shared.services.stock.api.dto.StockEditorDto;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
-import com.lazy.tcc.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
+import com.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator;
+import com.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator;
 
 /**
  * <p>

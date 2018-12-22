@@ -1,5 +1,7 @@
 package com.lazy.tcc.core.processor;
 
+import com.lazy.tcc.common.utils.DateUtils;
+import com.lazy.tcc.common.utils.ReflectionUtils;
 import com.lazy.tcc.common.utils.SnowflakeIdWorkerUtils;
 import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.Invoker;
@@ -8,10 +10,10 @@ import com.lazy.tcc.core.Transaction;
 import com.lazy.tcc.core.WeavingPointInfo;
 import com.lazy.tcc.core.exception.TransactionManagerException;
 import com.lazy.tcc.core.processor.support.AbstractProcessor;
+import com.lazy.tcc.core.spi.SpiConfiguration;
 import org.aspectj.lang.reflect.MethodSignature;
 
 import java.lang.reflect.Method;
-import java.util.Objects;
 
 /**
  * <p>
@@ -94,30 +96,33 @@ public final class ParticipantProcessor extends AbstractProcessor {
         }
 
         Method method = ((MethodSignature) (pointInfo.getJoinPoint().getSignature())).getMethod();
+        Class targetClass = ReflectionUtils.getDeclaringType(pointInfo.getJoinPoint().getTarget().getClass(), method.getName(), method.getParameterTypes());
+
         Invoker cancelInvoker = new Invoker()
+                .setReqSerialNum(String.valueOf(SnowflakeIdWorkerUtils.getSingle().nextId()))
                 .setTxId(transaction.getTxId())
                 .setArgs(pointInfo.getJoinPoint().getArgs())
                 .setMethodName(pointInfo.getCompensable().cancelMethod())
                 .setParameterTypes(method.getParameterTypes())
-                .setTargetClass(method.getClass());
+                .setTargetClass(targetClass);
 
         Invoker confirmInvoker = new Invoker()
+                .setReqSerialNum(String.valueOf(SnowflakeIdWorkerUtils.getSingle().nextId()))
                 .setTxId(transaction.getTxId())
                 .setArgs(pointInfo.getJoinPoint().getArgs())
                 .setMethodName(pointInfo.getCompensable().confirmMethod())
                 .setParameterTypes(method.getParameterTypes())
-                .setTargetClass(pointInfo.getJoinPoint().getTarget().getClass());
+                .setTargetClass(targetClass);
 
-        transaction.getParticipants().add(
-                new Participant()
-                        .setCancelIdempotentId(String.valueOf(SnowflakeIdWorkerUtils.getSingle().nextId()))
-                        .setTxId(transaction.getTxId())
-                        .setCancelMethodInvoker(cancelInvoker)
-                        .setConfirmMethodInvoker(confirmInvoker)
-        );
+        Participant participant = new Participant()
+                .setLastUpdateTime(DateUtils.getCurrentDateStr(DateUtils.YYYY_MM_DD_HH_MM_SS))
+                .setTxId(transaction.getTxId())
+                .setAppKey(SpiConfiguration.getInstance().getAppKey())
+                .setCancelMethodInvoker(cancelInvoker)
+                .setConfirmMethodInvoker(confirmInvoker);
 
         //add participant
-        this.transactionManager.participant(transaction);
+        this.transactionManager.participant(participant);
     }
 
     /**
@@ -135,7 +140,7 @@ public final class ParticipantProcessor extends AbstractProcessor {
             Method cancelMethod = pointInfo.getJoinPoint().getTarget().getClass()
                     .getDeclaredMethod(pointInfo.getCompensable().cancelMethod(), method.getParameterTypes());
 
-            if (cancelMethod == null){
+            if (cancelMethod == null) {
                 throw new TransactionManagerException("not definition cancel method " + pointInfo.getCompensable().cancelMethod());
             }
             return method;
@@ -158,7 +163,7 @@ public final class ParticipantProcessor extends AbstractProcessor {
 
             Method confirmMethod = pointInfo.getJoinPoint().getTarget().getClass()
                     .getDeclaredMethod(pointInfo.getCompensable().cancelMethod(), method.getParameterTypes());
-            if (confirmMethod == null){
+            if (confirmMethod == null) {
                 throw new TransactionManagerException("not definition confirm method " + pointInfo.getCompensable().confirmMethod());
             }
             return method;
