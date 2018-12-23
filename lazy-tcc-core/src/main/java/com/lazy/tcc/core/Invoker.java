@@ -1,17 +1,8 @@
 package com.lazy.tcc.core;
 
-import com.alibaba.fastjson.JSON;
-import com.lazy.tcc.common.enums.ApplicationRole;
-import com.lazy.tcc.common.utils.StringUtils;
-import com.lazy.tcc.core.annotation.Idempotent;
-import com.lazy.tcc.core.exception.TransactionManagerException;
-import com.lazy.tcc.core.propagator.IdempotentContextPropagator;
-import com.lazy.tcc.core.propagator.IdempotentContextPropagatorSingleFactory;
-import com.lazy.tcc.core.spi.SpiConfiguration;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
 
 /**
  * <p>
@@ -98,42 +89,7 @@ public class Invoker implements Serializable {
 
     @SuppressWarnings({"unchecked"})
     public void invoker(TransactionContext context) {
-
-        if (!this.txId.equals(context.getTxId())) {
-            throw new TransactionManagerException(String.format("invoker [%s] txId not match current transaction context [%s] txId"
-                    , JSON.toJSONString(this), JSON.toJSONString(context)));
-        }
-
-        if (StringUtils.isNotBlank(this.getMethodName())) {
-
-            try {
-
-                Object target = BeanFactory.getSingle().getApplicationContext().getBean(this.targetClass);
-
-                Method method = target.getClass().getMethod(this.getMethodName(), this.getParameterTypes());
-
-                com.lazy.tcc.core.annotation.Idempotent idempotent = method.getAnnotation(Idempotent.class);
-
-                //handler idempotent
-                if (idempotent != null && idempotent.applicationRole().equals(ApplicationRole.CONSUMER)) {
-
-                    IdempotentContextPropagatorSingleFactory.create(IdempotentContextPropagator.class).setIdempotentContext(
-                            new IdempotentContext().
-                                    setPk(new com.lazy.tcc.core.Idempotent.IdempotentPk()
-                                            .setAppKey(SpiConfiguration.getInstance().getAppKey())
-                                            .setReqSerialNum(this.reqSerialNum))
-                                    .setTxPhase(context.getTxPhase())
-                    );
-                }
-
-                //reflect invoker method
-                method.invoke(target, this.getArgs());
-            } catch (Exception e) {
-
-                throw new TransactionManagerException(e);
-            }
-        }
-
+        BeanFactory.getSingle().getApplicationContext().getBean(InvokerCaller.class).caller(this, context);
     }
 
 }

@@ -1,9 +1,6 @@
 package com.lazy.tcc.core.logger;
 
 
-import com.lazy.tcc.common.utils.StringUtils;
-import com.lazy.tcc.core.spi.PropertiesReader;
-import com.lazy.tcc.core.spi.SpiConfiguration;
 import com.lazy.tcc.core.logger.jcl.JclLoggerAdapter;
 import com.lazy.tcc.core.logger.jdk.JdkLoggerAdapter;
 import com.lazy.tcc.core.logger.log4j.Log4jLoggerAdapter;
@@ -26,28 +23,24 @@ public class LoggerFactory {
     private static volatile LoggerAdapter LOGGER_ADAPTER;
 
     static {
-        Class<? extends LoggerAdapter> logger = SpiConfiguration.getInstance().getLoggerAdapter();
-        if (logger == null) {
+        try {
+            setLoggerAdapter(new Slf4jLoggerAdapter());
+        } catch (Throwable e1) {
             try {
-                setLoggerAdapter(new Slf4jLoggerAdapter());
-            } catch (Throwable e1) {
+                setLoggerAdapter(new Log4jLoggerAdapter());
+            } catch (Throwable e2) {
                 try {
-                    setLoggerAdapter(new Log4jLoggerAdapter());
-                } catch (Throwable e2) {
+                    setLoggerAdapter(new JclLoggerAdapter());
+                } catch (Throwable e3) {
                     try {
-                        setLoggerAdapter(new JclLoggerAdapter());
-                    } catch (Throwable e3) {
                         setLoggerAdapter(new JdkLoggerAdapter());
+                    } catch (Throwable ex) {
+                        throw new RuntimeException(ex);
                     }
                 }
             }
-        } else {
-            try {
-                setLoggerAdapter((LoggerAdapter) logger.newInstance());
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
         }
+
     }
 
     private LoggerFactory() {

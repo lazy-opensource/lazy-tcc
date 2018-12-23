@@ -3,6 +3,8 @@ package com.lazy.tcc.core.repository.jdbc;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.IdempotentEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
+import com.lazy.tcc.core.logger.Logger;
+import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.support.AbstractIdempotentRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
@@ -18,6 +20,8 @@ import java.sql.ResultSet;
  * @since 2018/12/17.
  */
 public class MysqlIdempotentRepository extends AbstractIdempotentRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(MysqlIdempotentRepository.class);
 
     @Override
     public int createTable() {

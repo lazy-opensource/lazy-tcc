@@ -1,4 +1,4 @@
-package com.lazy.tcc.dubbo.proxy.jdk;
+package com.lazy.tcc.dubbo.proxy.javassist;
 
 
 import com.alibaba.dubbo.rpc.Invoker;

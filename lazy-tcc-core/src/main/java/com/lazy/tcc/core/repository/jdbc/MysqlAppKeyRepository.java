@@ -3,6 +3,8 @@ package com.lazy.tcc.core.repository.jdbc;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.AppKeyEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
+import com.lazy.tcc.core.logger.Logger;
+import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.support.AbstractAppKeyRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
@@ -20,6 +22,8 @@ import java.sql.SQLException;
  * @since 2018/12/13.
  */
 public class MysqlAppKeyRepository extends AbstractAppKeyRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(MysqlAppKeyRepository.class);
 
     @Override
     public int createTable() {

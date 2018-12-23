@@ -28,7 +28,6 @@ public abstract class AbstractDataSourceRepository<E extends BasicEntity, ID ext
 
     private DataSource dataSource;
     protected static final Serialization serialization = SerializationFactory.create();
-    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public DataSource getDataSource() {
         return dataSource;

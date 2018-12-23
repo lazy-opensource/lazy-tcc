@@ -91,9 +91,9 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
         orderEntity.getItemEntityList().add(orderItemEntity2);
 
         //saved order
-        iOrderService.save(orderEntity);
         iOrderItemService.save(orderItemEntity1);
         iOrderItemService.save(orderItemEntity2);
+        iOrderService.save(orderEntity);
 
         //deduct customer capital
         iCustomerService.deductCapital(orderEntity.getCustomerNo(), orderEntity.getTotalAmount());

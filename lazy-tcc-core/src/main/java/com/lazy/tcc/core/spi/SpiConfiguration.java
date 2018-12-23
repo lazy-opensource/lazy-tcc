@@ -5,6 +5,7 @@ import com.lazy.tcc.common.utils.StringUtils;
 import com.lazy.tcc.core.cache.Cache;
 import com.lazy.tcc.core.cache.guava.GoogleGuavaCache;
 import com.lazy.tcc.core.logger.LoggerAdapter;
+import com.lazy.tcc.core.logger.slf4j.Slf4jLoggerAdapter;
 import com.lazy.tcc.core.repository.jdbc.MysqlAppKeyRepository;
 import com.lazy.tcc.core.repository.jdbc.MysqlIdempotentRepository;
 import com.lazy.tcc.core.repository.jdbc.MysqlParticipantRepository;
@@ -16,6 +17,7 @@ import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.serializer.Serialization;
 import com.lazy.tcc.core.serializer.jdk.JdkSerialization;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 
 import java.lang.reflect.Field;
 import java.net.InetAddress;
@@ -29,7 +31,7 @@ import java.net.UnknownHostException;
  * @author laizhiyuan
  * @since 2018/10/16.
  */
-@ConfigurationProperties("lazy.tcc.config")
+@ConfigurationProperties("lazy.tcc.autoconfig")
 public class SpiConfiguration {
 
     private Class<? extends Serialization> seriClassImpl = JdkSerialization.class;
@@ -38,7 +40,6 @@ public class SpiConfiguration {
     private Class<? extends AbstractIdempotentRepository> idempotentRepository = MysqlIdempotentRepository.class;
     private Class<? extends AbstractAppKeyRepository> appkeyRepository = MysqlAppKeyRepository.class;
     private Class<? extends AbstractParticipantRepository> participantRepository = MysqlParticipantRepository.class;
-    private Class<? extends LoggerAdapter> loggerAdapter;
     private String txTableName = "lazy_tcc_transaction";
     private String txDatabaseName;
     private String idempotentTableName = "lazy_tcc_idempotent";
@@ -51,6 +52,7 @@ public class SpiConfiguration {
     private int keepRequestLogDayCount = 31;
     private int compensationMinuteInterval = 10;
     private boolean enableCompensableScheduler = true;
+
 
     public Class<? extends AbstractAppKeyRepository> getAppkeyRepository() {
         return appkeyRepository;
@@ -269,15 +271,6 @@ public class SpiConfiguration {
         return this;
     }
 
-    public Class<? extends LoggerAdapter> getLoggerAdapter() {
-        return loggerAdapter;
-    }
-
-    public SpiConfiguration setLoggerAdapter(Class<? extends LoggerAdapter> loggerAdapter) {
-        this.loggerAdapter = loggerAdapter;
-        return this;
-    }
-
     /**
      * 单例对象
      */
@@ -286,7 +279,7 @@ public class SpiConfiguration {
     /**
      * Config Pre
      */
-    private static final String ROOT_PRE = "lazy.tcc.config.";
+    private static final String ROOT_PRE = "lazy.tcc.autoconfig.";
 
 
     /**

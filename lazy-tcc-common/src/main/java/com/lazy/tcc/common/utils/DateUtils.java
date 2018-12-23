@@ -195,7 +195,7 @@ public abstract class DateUtils {
      * @param args
      */
     public static void main(String[] args) {
-        System.out.println(timestamp2Str(new Timestamp(System.currentTimeMillis())));
-        System.out.println(date2Str(new Date(), null));
+        System.out.println(DateUtils.getBeforeByMinuteTime(1,
+                DateUtils.YYYY_MM_DD_HH_MM_SS));
     }
 }

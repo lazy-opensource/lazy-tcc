@@ -4,6 +4,8 @@ import com.lazy.tcc.common.enums.TransactionPhase;
 import com.lazy.tcc.common.utils.DateUtils;
 import com.lazy.tcc.core.entity.TransactionEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
+import com.lazy.tcc.core.logger.Logger;
+import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.support.AbstractTransactionRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
@@ -23,6 +25,8 @@ import java.util.List;
  * @since 2018/12/13.
  */
 public class MysqlTransactionRepository extends AbstractTransactionRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(MysqlTransactionRepository.class);
 
     @Override
     public int createTable() {

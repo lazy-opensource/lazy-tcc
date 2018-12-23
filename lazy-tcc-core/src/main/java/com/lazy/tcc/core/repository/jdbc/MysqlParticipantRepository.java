@@ -5,6 +5,8 @@ import com.lazy.tcc.common.utils.SnowflakeIdWorkerUtils;
 import com.lazy.tcc.core.Invoker;
 import com.lazy.tcc.core.entity.ParticipantEntity;
 import com.lazy.tcc.core.exception.TransactionCrudException;
+import com.lazy.tcc.core.logger.Logger;
+import com.lazy.tcc.core.logger.LoggerFactory;
 import com.lazy.tcc.core.repository.support.AbstractParticipantRepository;
 import com.lazy.tcc.core.spi.SpiConfiguration;
 
@@ -26,6 +28,8 @@ import java.util.List;
  * @since 2018/12/13.
  */
 public class MysqlParticipantRepository extends AbstractParticipantRepository {
+
+    private static final Logger logger = LoggerFactory.getLogger(MysqlParticipantRepository.class);
 
     @Override
     public int createTable() {
@@ -63,8 +67,6 @@ public class MysqlParticipantRepository extends AbstractParticipantRepository {
                     "  `app_key` bigint(20) NOT NULL COMMENT '应用key'," +
                     "  `confirm_invoker` varbinary(3000) NOT NULL COMMENT '确认调用对象'," +
                     "  `cancel_invoker` varbinary(3000) NOT NULL COMMENT '取消调用对象'," +
-                    "  `confirm_idempotent_id` varchar(32) NOT NULL COMMENT '确认调用对象'," +
-                    "  `cancel_idempotent_id` varchar(32) NOT NULL COMMENT '取消调用对象'," +
                     "  `version` bigint(20) NOT NULL COMMENT '乐观锁版本号'," +
                     "  `create_time` varchar(32) NOT NULL COMMENT '创建时间'," +
                     "  `last_update_time` varchar(32) NOT NULL COMMENT '最后更新时间'," +
@@ -91,7 +93,7 @@ public class MysqlParticipantRepository extends AbstractParticipantRepository {
             connection = this.getConnection();
 
             String builder = "insert into " + SpiConfiguration.getInstance().getParticipantTableName() +
-                    " (id,tx_id,confirm_invoker,cancel_invoker" +
+                    " (id,tx_id,confirm_invoker,cancel_invoker," +
                     "app_key,create_time,last_update_time,version) VALUES (?,?,?,?,?,?,?,?)";
 
             stmt = connection.prepareStatement(builder);

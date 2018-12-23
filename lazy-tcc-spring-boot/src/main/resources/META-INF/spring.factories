@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.lazy.tcc.core.springboot.autoconfig.LazyTccAutoConfiguration,\
+  com.lazy.tcc.core.spi.SpiConfiguration
+org.springframework.boot.diagnostics.FailureAnalyzer=\
+  com.lazy.tcc.core.springboot.autoconfig.LazyTccFailureAnalyzer
+org.springframework.context.ApplicationListener=\
+  com.lazy.tcc.core.listener.DefaultListener

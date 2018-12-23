@@ -5,7 +5,9 @@
     <modules>
         <module>lazy-tcc-common</module>
         <module>lazy-tcc-core</module>
+        <module>lazy-tcc-spring-boot</module>
         <module>lazy-tcc-dubbo</module>
+        <module>lazy-tcc-dubbo-spring-boot</module>
         <module>lazy-tcc-example-dubbo</module>
     </modules>
     <parent>
@@ -39,7 +41,17 @@
         <dependencies>
             <dependency>
                 <groupId>com.lazy.tcc</groupId>
+                <artifactId>lazy-tcc-spring-boot</artifactId>
+                <version>${last.update.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lazy.tcc</groupId>
                 <artifactId>lazy-tcc-core</artifactId>
+                <version>${last.update.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.lazy.tcc</groupId>
+                <artifactId>lazy-tcc-dubbo</artifactId>
                 <version>${last.update.version}</version>
             </dependency>
             <dependency>

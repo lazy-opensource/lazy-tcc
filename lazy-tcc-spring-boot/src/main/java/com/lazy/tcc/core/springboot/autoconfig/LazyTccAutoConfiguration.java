@@ -1,4 +1,4 @@
-package com.lazy.tcc.core.autoconfig;
+package com.lazy.tcc.core.springboot.autoconfig;
 
 import com.lazy.tcc.core.BeanFactory;
 import com.lazy.tcc.core.interceptor.IdempotentInterceptor;
@@ -10,6 +10,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
 import javax.sql.DataSource;
@@ -24,6 +25,7 @@ import java.beans.PropertyVetoException;
  * @since 2018/12/16.
  */
 @Configuration
+@ComponentScan({"com.lazy.tcc.core"})
 public class LazyTccAutoConfiguration implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
@@ -41,29 +43,6 @@ public class LazyTccAutoConfiguration implements ApplicationContextAware {
     @Bean
     public IdempotentInterceptor lazyTccIdempotentInterceptor() {
         return new IdempotentInterceptor();
-    }
-
-    @Bean
-    public DefaultListener defaultListener() {
-        DataSource applicationDataSource = applicationContext.getBean(DataSource.class);
-        return new DefaultListener(createDataSource(), applicationDataSource);
-    }
-
-    private DataSource createDataSource() {
-        ComboPooledDataSource dataSource = new ComboPooledDataSource();
-
-        try {
-            dataSource.setDriverClass(SpiConfiguration.getInstance().getDatasourceDriver());
-        } catch (PropertyVetoException e) {
-            throw new RuntimeException(e);
-        }
-        dataSource.setJdbcUrl(SpiConfiguration.getInstance().getDatasourceUrl());
-        dataSource.setUser(SpiConfiguration.getInstance().getDatasourceUsername());
-        dataSource.setPassword(SpiConfiguration.getInstance().getDatasourcePassword());
-        dataSource.setAutoCommitOnClose(true);
-
-
-        return dataSource;
     }
 
     @Override

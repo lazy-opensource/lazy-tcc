@@ -6,7 +6,6 @@ import com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler;
 import com.lazy.tcc.core.BeanFactory;
 import com.lazy.tcc.core.annotation.Compensable;
 import com.lazy.tcc.core.interceptor.TransactionInterceptor;
-import com.lazy.tcc.dubbo.proxy.jdk.MethodProceedingJoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 
 import java.lang.reflect.Method;

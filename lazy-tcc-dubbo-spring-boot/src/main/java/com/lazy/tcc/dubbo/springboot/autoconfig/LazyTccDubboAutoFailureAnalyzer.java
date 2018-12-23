@@ -1,4 +1,4 @@
-package com.lazy.tcc.core.autoconfig;
+package com.lazy.tcc.dubbo.springboot.autoconfig;
 
 
 import com.lazy.tcc.core.logger.Logger;
@@ -14,9 +14,9 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  * @author laizhiyuan
  * @since 2018/11/17.
  */
-public class LazyTccFailureAnalyzer extends AbstractFailureAnalyzer<Exception> {
+public class LazyTccDubboAutoFailureAnalyzer extends AbstractFailureAnalyzer<Exception> {
 
-    private static Logger logger = LoggerFactory.getLogger(LazyTccFailureAnalyzer.class);
+    private static Logger logger = LoggerFactory.getLogger(LazyTccDubboAutoFailureAnalyzer.class);
 
     @Override
     protected FailureAnalysis analyze(Throwable rootFailure, Exception cause) {
