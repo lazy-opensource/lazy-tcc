@@ -31,7 +31,7 @@ import java.net.UnknownHostException;
  * @author laizhiyuan
  * @since 2018/10/16.
  */
-@ConfigurationProperties("lazy.tcc.autoconfig")
+@ConfigurationProperties("lazy.tcc.config")
 public class SpiConfiguration {
 
     private Class<? extends Serialization> seriClassImpl = JdkSerialization.class;
@@ -279,7 +279,7 @@ public class SpiConfiguration {
     /**
      * Config Pre
      */
-    private static final String ROOT_PRE = "lazy.tcc.autoconfig.";
+    private static final String ROOT_PRE = "lazy.tcc.config.";
 
 
     /**

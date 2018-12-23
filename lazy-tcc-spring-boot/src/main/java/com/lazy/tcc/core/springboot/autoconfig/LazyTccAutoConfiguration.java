@@ -25,7 +25,6 @@ import java.beans.PropertyVetoException;
  * @since 2018/12/16.
  */
 @Configuration
-@ComponentScan({"com.lazy.tcc.core"})
 public class LazyTccAutoConfiguration implements ApplicationContextAware {
 
     private ApplicationContext applicationContext;
