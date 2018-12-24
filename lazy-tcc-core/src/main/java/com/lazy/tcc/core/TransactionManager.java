@@ -133,7 +133,7 @@ public final class TransactionManager {
             participant.confirm(context);
         }
 
-        this.TRANSACTION_REPOSITORY.delete(transaction.getTxId());
+        TRANSACTION_REPOSITORY.delete(transaction.getTxId());
     }
 
     public void rollback(boolean asyncCancel) {

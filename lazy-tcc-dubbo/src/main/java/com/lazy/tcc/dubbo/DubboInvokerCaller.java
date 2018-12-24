@@ -68,7 +68,7 @@ public class DubboInvokerCaller implements InvokerCaller {
                 //handler idempotent
                 if (idempotent != null && idempotent.applicationRole().equals(ApplicationRole.CONSUMER)) {
 
-                    IdempotentContextPropagatorSingleFactory.create(IdempotentContextPropagator.class).setIdempotentContext(
+                    IdempotentContextPropagatorSingleFactory.create(idempotent.propagator()).setIdempotentContext(
                             new IdempotentContext().
                                     setPk(new com.lazy.tcc.core.Idempotent.IdempotentPk()
                                             .setAppKey(SpiConfiguration.getInstance().getAppKey())

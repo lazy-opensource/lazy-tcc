@@ -5,12 +5,17 @@ import com.alibaba.dubbo.common.bytecode.Wrapper;
 import com.alibaba.dubbo.rpc.Invoker;
 import com.alibaba.dubbo.rpc.proxy.AbstractProxyInvoker;
 import com.alibaba.dubbo.rpc.proxy.InvokerInvocationHandler;
+import com.lazy.tcc.core.annotation.Idempotent;
 import com.lazy.tcc.dubbo.DubboInvokerCaller;
+
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
 
 
 public class JavassistProxyFactory extends com.alibaba.dubbo.rpc.proxy.javassist.JavassistProxyFactory {
 
     @SuppressWarnings({"unchecked"})
+    @Override
     public <T> T getProxy(Invoker<T> invoker, Class<?>[] interfaces) {
         T proxy = (T) Proxy.getProxy(interfaces).newInstance(new InvokerInvocationHandler(invoker));
 

@@ -59,7 +59,7 @@ public final class IdempotentProcessor extends AbstractProcessor {
     @Override
     protected Object doProcessor(WeavingPointInfo pointInfo) throws Throwable {
 
-        IdempotentContext context = IdempotentContextPropagatorSingleFactory.create(IdempotentContextPropagator.class).getIdempotentContext();
+        IdempotentContext context = IdempotentContextPropagatorSingleFactory.create(pointInfo.getIdempotent().propagator()).getIdempotentContext();
 
         if (context == null) {
 

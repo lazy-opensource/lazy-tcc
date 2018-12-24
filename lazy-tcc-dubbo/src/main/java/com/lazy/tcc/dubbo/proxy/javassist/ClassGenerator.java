@@ -280,7 +280,7 @@ public final class ClassGenerator {
                             enumMemberValue.setValue(compensable.propagation().name());
                             annot.addMemberValue("propagation", enumMemberValue);
 
-                            ClassMemberValue classMemberValue = new ClassMemberValue("DubboTransactionContextPropagator", constpool);
+                            ClassMemberValue classMemberValue = new ClassMemberValue("com.lazy.tcc.dubbo.propagator.DubboTransactionContextPropagator", constpool);
                             annot.addMemberValue("propagator", classMemberValue);
 
                             attr.addAnnotation(annot);
@@ -292,13 +292,13 @@ public final class ClassGenerator {
                             Idempotent idempotent = idempotentMethods.get(code);
                             ConstPool constpool = mCtc.getClassFile().getConstPool();
                             AnnotationsAttribute attr = new AnnotationsAttribute(constpool, AnnotationsAttribute.visibleTag);
-                            Annotation annot = new Annotation("com.lazy.tcc.core.annotation.Idempotemt", constpool);
+                            Annotation annot = new Annotation("com.lazy.tcc.core.annotation.Idempotent", constpool);
                             EnumMemberValue enumMemberValue = new EnumMemberValue(constpool);
                             enumMemberValue.setType("com.lazy.tcc.common.enums.ApplicationRole");
                             enumMemberValue.setValue(idempotent.applicationRole().name());
                             annot.addMemberValue("applicationRole", enumMemberValue);
 
-                            ClassMemberValue classMemberValue = new ClassMemberValue("DubboIdempotentContextPropagator", constpool);
+                            ClassMemberValue classMemberValue = new ClassMemberValue("com.lazy.tcc.dubbo.propagator.DubboIdempotentContextPropagator", constpool);
                             annot.addMemberValue("propagator", classMemberValue);
 
                             attr.addAnnotation(annot);

@@ -2,6 +2,7 @@ package com.lazy.tcc.example.dubbo.aggregate.services.retail.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.lazy.tcc.core.annotation.Compensable;;
+import com.lazy.tcc.core.annotation.Idempotent;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.entity.TOrderEntity;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.entity.TOrderItemEntity;
 import com.lazy.tcc.example.dubbo.aggregate.services.retail.service.IOrderItemService;
@@ -106,6 +107,10 @@ public class DefaultShopCartServiceImpl implements IShopCartService {
         iStockService.deductStock(new StockEditorDto()
                 .setProductSku(orderItemEntity1.getProductSku())
                 .setStockNum(orderItemEntity1.getProductNum()));
+
+        //If an exception occurs here, the data will be inconsistent
+        //NullPointerException
+        markerException.toString();
         iStockService.deductStock(new StockEditorDto()
                 .setProductSku(orderItemEntity2.getProductSku())
                 .setStockNum(orderItemEntity2.getProductNum()));

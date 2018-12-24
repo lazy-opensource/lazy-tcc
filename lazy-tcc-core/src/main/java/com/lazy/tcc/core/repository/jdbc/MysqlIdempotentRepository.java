@@ -54,11 +54,11 @@ public class MysqlIdempotentRepository extends AbstractIdempotentRepository {
             logger.info(String.format("idempotent table %s not exists, now create it", SpiConfiguration.getInstance().getIdempotentTableName()));
 
             String sql = "CREATE TABLE `" + SpiConfiguration.getInstance().getIdempotentTableName() + "` (" +
-                    "  `req_seril_num` varchar(32) NOT NULL COMMENT '请求序列号'," +
+                    "  `req_serial_num` varchar(32) NOT NULL COMMENT '请求序列号'," +
                     "  `app_key` varchar(32) NOT NULL COMMENT '客户端应用标识符'," +
                     "  `business_rec` varchar(45) DEFAULT '' COMMENT '业务记录'," +
                     "  `create_time` varchar(32) NOT NULL COMMENT '创建时间'," +
-                    "  PRIMARY KEY (`req_seril_num`,`app_key`)" +
+                    "  PRIMARY KEY (`req_serial_num`,`app_key`)" +
                     ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4";
 
             stmt = connection.prepareStatement(sql);
@@ -113,7 +113,7 @@ public class MysqlIdempotentRepository extends AbstractIdempotentRepository {
             connection = this.getConnection();
 
             String builder = "insert into " + SpiConfiguration.getInstance().getIdempotentTableName() +
-                    " (req_seril_num,app_key,business_rec,create_time) VALUES (?,?,?,?)";
+                    " (req_serial_num,app_key,business_rec,create_time) VALUES (?,?,?,?)";
 
             stmt = connection.prepareStatement(builder);
 

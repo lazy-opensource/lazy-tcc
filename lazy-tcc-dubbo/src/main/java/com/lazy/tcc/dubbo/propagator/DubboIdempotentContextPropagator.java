@@ -16,6 +16,9 @@ import com.lazy.tcc.core.propagator.support.AbstractIdempotentContextPropagator;
  */
 public class DubboIdempotentContextPropagator extends AbstractIdempotentContextPropagator {
 
+    public DubboIdempotentContextPropagator() {
+        super();
+    }
 
     @Override
     public void setIdempotentContext(IdempotentContext idempotentContext) {
